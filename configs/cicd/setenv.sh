@@ -1,0 +1,4 @@
+CATALINA_OPTS="$CATALINA_OPTS -Dfile.encoding=UTF-8 -Djava.locale.providers=JRE,COMPAT,CLDR -Djava.net.preferIPv4Stack=true -Duser.timezone=GMT+7 -Xms2560m -Xmx2560m -XX:MaxNewSize=1536m -XX:MaxMetaspaceSize=768m -XX:MetaspaceSize=768m -XX:NewSize=1536m -XX:SurvivorRatio=7"
+JACOCO_OPTS=" -javaagent:jacocoagent.jar=destfile=testIntegration.exec,output=file,append=true,jmx=true,includes=com.dogoo.* -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=8099 -Dcom.sun.management.jmxremote.ssl=false"
+
+CATALINA_OPTS="${CATALINA_OPTS} ${JACOCO_OPTS}"

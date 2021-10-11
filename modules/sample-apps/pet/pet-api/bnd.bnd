@@ -1,0 +1,11 @@
+Bundle-Name: pet-api
+Bundle-SymbolicName: com.dogoo.poc.pet.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.dogoo.poc.pet.exception,\
+	com.dogoo.poc.pet.model,\
+	com.dogoo.poc.pet.service,\
+	com.dogoo.poc.pet.service.persistence,\
+    com.dogoo.poc.pet.constant
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../pet-service/service.xml

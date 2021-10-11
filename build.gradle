@@ -1,0 +1,270 @@
+plugins {
+    id 'jacoco'
+    id "org.sonarqube" version "3.0"
+}
+
+// aggregates jacoco results from all subprojects and core project and generate a report
+task jacocoRootTestReport(type: JacocoReport) {
+
+    def jacocoTestFiles = []
+
+    def testIntegrationFile = "/opt/app/dogoo-test/tomcat-9.0.43/bin/testIntegration.exec"
+
+    if (new File(testIntegrationFile).exists()) {
+        jacocoTestFiles << testIntegrationFile
+    }
+
+    subprojects.each { p ->
+
+        def coverageFileLocation = "$p.buildDir/jacoco/test.exec"
+        if (new File(coverageFileLocation).exists()) {
+            jacocoTestFiles << coverageFileLocation
+        }
+
+        additionalSourceDirs.from(file("${p.projectDir}/src/java/main"))
+        sourceDirectories.from(file("${p.projectDir}/src/main/java"))
+        //classDirectories.from(file("${p.buildDir}/classes/java/main"))
+
+        classDirectories.from(fileTree(
+                dir: "${p.buildDir}/classes/java/main",
+                excludes: [
+                        '**/rest/client/**',
+                        '**/service/base/**',
+                        '**/service/http/**',
+                        '**/service/persistence/**',
+                        '**/model/**Entry**',
+                        '**/model/**EntryModel**',
+                        '**/model/**EntrySoap**',
+                        '**/model/**EntryTable**',
+                        '**/model/**EntryWrapper**',
+                        '**/model/impl/**',
+                        '**/resource/v1_0/factory/**',
+                        '**/rest/resource/v1_0/**',
+                        '**/rest/dto/v1_0/**',
+                        '**/rest/internal/graphql/**',
+                        '**/rest/internal/jaxrs/application/**',
+                        '**/resource/v1_0/factory/**',
+                        '**/resource/v1_0/Base**',
+                        '**/resource/v1_0/OpenAPIResourceImpl**',
+                        '**/service/**ServiceWrapper**',
+                        '**/service/**ServiceUtil**',
+                        '**/exception/NoSuch**Exception**'
+                ]
+        ))
+    }
+
+    logger.info('Aggregating next JaCoCo Coverage Files: {}', jacocoTestFiles)
+    executionData files(jacocoTestFiles)
+
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+//RUN WHEN testIntegration done
+task dumpJacoco {
+    doLast {
+        def serverUrl = 'service:jmx:rmi:///jndi/rmi://localhost:8099/jmxrmi'
+        String beanName = "org.jacoco:type=Runtime"
+        def server = JmxFactory.connect(new JmxUrl(serverUrl)).MBeanServerConnection
+        def gmxb = new GroovyMBean(server, beanName)
+
+        println "Connected to:\n$gmxb\n"
+        println "Executing dump()"
+        gmxb.dump(true)
+    }
+}
+
+task resetJacoco {
+    doLast {
+        def serverUrl = 'service:jmx:rmi:///jndi/rmi://localhost:8099/jmxrmi'
+        String beanName = "org.jacoco:type=Runtime"
+        def server = JmxFactory.connect(new JmxUrl(serverUrl)).MBeanServerConnection
+        def gmxb = new GroovyMBean(server, beanName)
+
+        println "Connected to:\n$gmxb\n"
+        println "Executing reset()"
+        gmxb.reset()
+    }
+}
+
+
+sonarqube {
+    properties {
+        //property "sonar.host.url", "http://localhost:9000/"
+        property "sonar.host.url", "http://103.130.213.34:9000/"
+        property "sonar.projectKey", "dogoo_be"
+        property "sonar.projectName", "dogoo_be"
+        //property "sonar.login", "2fe813a08c5071770a8266e720f858941be39f4c"
+        //property "sonar.login", "2565ed76e22c396eda93102ececa0c5125a6c525"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.exclusions",
+                '**/rest/client/**, ' +
+                '**/service/base/**, ' +
+                '**/service/http/**, ' +
+                '**/service/persistence/**, ' +
+                '**/model/**Entry**, ' +
+                '**/model/**EntryModel**, ' +
+                '**/model/**EntrySoap**, ' +
+                '**/model/**EntryTable**, ' +
+                '**/model/**EntryWrapper**, ' +
+                '**/model/impl/**, ' +
+                '**/resource/v1_0/factory/**, ' +
+                '**/rest/resource/v1_0/**, ' +
+                '**/rest/dto/v1_0/**, ' +
+                '**/rest/internal/graphql/**, ' +
+                '**/rest/internal/jaxrs/application/**, ' +
+                '**/resource/v1_0/factory/**, ' +
+                '**/resource/v1_0/Base**, ' +
+                '**/resource/v1_0/OpenAPIResourceImpl**, ' +
+                '**/service/**ServiceWrapper**, ' +
+                '**/service/**ServiceUtil**, ' +
+                '**/exception/NoSuch**Exception**'
+
+//                '**/rest/client/**, ' +
+//                '**/**-api/**, ' +
+//                '**/**-rest-api/**, ' +
+//                '**/**-rest-test/**, ' +
+//                '**/**-rest-client/**, ' +
+//                '**/**-test/**,' +
+//                '**/*Test*/**,' +
+//                '**.*Test.java,' +
+//                '**/test/**,' +
+//                '**/model/impl/**,' +
+//                '**/service/base/**,' +
+//                '**/service/persistence/impl/**,' +
+//                '**/rest/internal/graphql/**,' +
+//                '**/rest/internal/jaxrs/application/**,' +
+//                '**/service/http/**,'
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/jacocoRootTestReport/jacocoRootTestReport.xml"
+        property "sonar.coverage.exclusions",
+                '**/rest/client/**, ' +
+                '**/**-api/**, ' +
+                '**/**-rest-api/**, ' +
+                '**/**-rest-test/**, ' +
+                '**/**-rest-client/**, ' +
+                '**/**-test/**,' +
+                '**/*Test*/**,' +
+                '**.*Test.java,' +
+                '**/test/**,' +
+                '**/model/impl/**,' +
+                '**/service/base/**,' +
+                '**/service/persistence/impl/**,' +
+                '**/rest/internal/graphql/**,' +
+                '**/rest/internal/jaxrs/application/**,' +
+                '**/service/http/**,'
+    }
+}
+
+
+//Will remove
+/*
+task copyJacocoAgent(type: Copy) {
+    from configurations.downloadJacoco
+    into "$buildDir/jacoco"
+
+    // strip version number out of agent jar
+    configurations.downloadJacoco.allDependencies.each {
+        rename "-${it.version}", ""
+    }
+}
+
+task setJacocoAgent(type: Copy) {
+
+    dependsOn 'initBundle', 'setLibs'
+
+    def projectPath = "$projectDir"
+
+    if (OperatingSystem.current().isWindows()) {
+
+        from "$rootDir/configs/cicd/setenv.bat"
+        into "$rootDir/bundles/tomcat-9.0.43/bin"
+
+        filter(ReplaceTokens, tokens: [projectdir: projectPath.toString()])
+    } else {
+
+        from "$rootDir/configs/cicd/setenv.sh"
+        into "$rootDir/bundles/tomcat-9.0.43/bin"
+
+        filter(ReplaceTokens, tokens: [projectdir: projectPath.toString()])
+
+    }
+}
+
+task setLibs(type: Copy) {
+    from "$rootDir/bundles/osgi/test"
+    into "$rootDir/bundles/osgi/modules"
+}
+
+task makeDeployFiles(type:Exec) {
+    //dependsOn 'setJacocoAgent'
+
+    workingDir "${projectDir}"
+
+    if (OperatingSystem.current().isWindows()) {
+        commandLine 'cmd', '/c', 'gradlew.bat deploy'
+    } else {
+        commandLine './gradlew', 'deploy'
+    }
+}
+
+task setEnvironment(type: Delete) {
+    dependsOn 'makeDeployFiles'
+
+    def pathModules = "$projectDir" + '\\bundles\\osgi\\modules\\'
+
+    if (OperatingSystem.current().isLinux() || OperatingSystem.current().isMacOsX()) {
+        pathModules = "$projectDir/bundles/osgi/modules"
+    }
+
+    delete fileTree(pathModules.toString()) {
+        include '*.test.jar', '*.client.jar'
+    }
+}
+
+task stopTomcat(type:Exec) {
+    workingDir "${projectDir}/bundles/tomcat-9.0.43/bin/"
+
+    //on windows:
+
+    if (OperatingSystem.current().isWindows()) {
+        commandLine 'cmd', '/c', 'shutdown.bat'
+    } else {
+        commandLine './shutdown.sh'
+    }
+
+}
+
+task startTomcat(type:Exec) {
+    //println "${projectDir}"
+
+    workingDir "${projectDir}/bundles/tomcat-9.0.43/bin/"
+
+    if (OperatingSystem.current().isWindows()) {
+        commandLine 'cmd', '/c', 'startup.bat'
+    } else {
+        commandLine './startup.sh'
+    }
+
+    //store the output instead of printing to the console:
+    standardOutput = new ByteArrayOutputStream()
+
+    //extension method stopTomcat.output() can be used to obtain the output:
+    ext.output = {
+        return standardOutput.toString()
+    }
+}
+
+configurations {
+    downloadJacoco
+}
+
+dependencies {
+    downloadJacoco "org.jacoco:org.jacoco.agent:0.8.7:runtime"
+}
+*/
+
+import javax.management.remote.JMXConnectorFactory as JmxFactory
+import javax.management.remote.JMXServiceURL as JmxUrl

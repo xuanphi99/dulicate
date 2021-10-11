@@ -1,0 +1,458 @@
+components:
+    responses:
+        # Descriptions of common responses
+        BadRequestException:
+            description: Request body not meet require
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+                application/xml:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+        NotAuthorizedException:
+            description: Authentication failure
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+                application/xml:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+        ForbiddenException:
+            description: Not permitted to access
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+                application/xml:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+        NotFoundException:
+            description: The specified resource was not found
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+                application/xml:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+        NotAllowedException:
+            description: HTTP method not supported
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+                application/xml:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+        NotAcceptableException:
+            description: Client media type requested not supported
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+                application/xml:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+        NotSupportedException:
+            description: Client posted media type not supported
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+                application/xml:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+        InternalServerErrorException:
+            description: Internal Server Error
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+                application/xml:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+        ServiceUnavailableException:
+            description: Server is temporarily unavailable or busy
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+                application/xml:
+                    schema:
+                        $ref: "#/components/schemas/Error"
+    schemas:
+        Pet:
+            type: object
+            required:
+                - name
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                tag:
+                    type: string
+                status:
+                    type: string
+                    enum: [PENDING, APPROVED, REJECTED]
+                statusDate:
+                    type: string
+                creator:
+                    $ref: "#/components/schemas/Creator"
+
+        Creator:
+            description: Represents the user account of the content's creator/author. Properties follow the [creator](https://schema.org/creator) specification.
+            properties:
+                additionalName:
+                    description: The author's additional name (e.g., middle name).
+                    readOnly: true
+                    type: string
+                familyName:
+                    description: The author's surname.
+                    readOnly: true
+                    type: string
+                givenName:
+                    description: The author's first name.
+                    readOnly: true
+                    type: string
+                id:
+                    description: The author's ID.
+                    format: int64
+                    readOnly: true
+                    type: integer
+                roles:
+                    description: The list roles of creator
+                    readOnly: true
+                    type: string
+                scopeOrgIds:
+                    description: The list orgIds that user belong to
+                    format: int64
+                    readOnly: true
+                    type: integer
+                image:
+                    description: A relative URL to the author's profile image.
+                    format: uri
+                    readOnly: true
+                    type: string
+                name:
+                    description: The author's full name.
+                    readOnly: true
+                    type: string
+                email:
+                    description: The author's email.
+                    readOnly: true
+                    type: string
+                profileURL:
+                    description: A relative URL to the author's user profile.
+                    format: uri
+                    readOnly: true
+                    type: string
+            type: object
+
+        Error:
+            type: object
+            properties:
+                status:
+                    format: int64
+                    readOnly: true
+                    type: integer
+                    example: 401
+                code:
+                    type: string
+                    example: DOGOO-100
+                message:
+                    type: string
+                developerMessage:
+                    type: string
+            required:
+                - code
+                - message
+
+openapi: 3.0.1
+info:
+    description: "SampleRest REST API - Pets Store in DoGoo"
+    license:
+        name: "Apache 2.0"
+        url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+    title: "SampleRest - DoGoo"
+    version: v1.0
+
+paths:
+    "/pets":
+        get:
+            operationId: getPetsPage
+            tags: ["Pet"]
+            description: Retrieves the pets. Results can be paginated, filtered, searched, and sorted.
+            parameters:
+                - in: query
+                  name: filter
+                  schema:
+                      type: string
+                - in: query
+                  name: page
+                  schema:
+                      type: integer
+                - in: query
+                  name: pageSize
+                  schema:
+                      type: integer
+                - in: query
+                  name: search
+                  schema:
+                      type: string
+                - in: query
+                  name: sort
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: A paged array of pets
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/Pet"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/Pet"
+                                type: array
+                400:
+                    $ref: "#/components/responses/BadRequestException"
+                401:
+                    $ref: "#/components/responses/NotAuthorizedException"
+                403:
+                    $ref: "#/components/responses/ForbiddenException"
+                404:
+                    $ref: "#/components/responses/NotFoundException"
+                405:
+                    $ref: "#/components/responses/NotAllowedException"
+                406:
+                    $ref: "#/components/responses/NotAcceptableException"
+                415:
+                    $ref: "#/components/responses/NotSupportedException"
+                500:
+                    $ref: "#/components/responses/InternalServerErrorException"
+                503:
+                    $ref: "#/components/responses/ServiceUnavailableException"
+        post:
+            operationId: postPet
+            tags: ["Pet"]
+            description: Create a pet
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Pet"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Pet"
+            responses:
+                201:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Pet"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/Pet"
+                    description: "Pet just created"
+                400:
+                    $ref: "#/components/responses/BadRequestException"
+                401:
+                    $ref: "#/components/responses/NotAuthorizedException"
+                403:
+                    $ref: "#/components/responses/ForbiddenException"
+                404:
+                    $ref: "#/components/responses/NotFoundException"
+                405:
+                    $ref: "#/components/responses/NotAllowedException"
+                406:
+                    $ref: "#/components/responses/NotAcceptableException"
+                415:
+                    $ref: "#/components/responses/NotSupportedException"
+                500:
+                    $ref: "#/components/responses/InternalServerErrorException"
+                503:
+                    $ref: "#/components/responses/ServiceUnavailableException"
+    "/pets/{petId}":
+        delete:
+            operationId: deletePet
+            tags: ["Pet"]
+            description: Delete a pet
+            parameters:
+                - name: petId
+                  in: path
+                  required: true
+                  description: The id of the pet to retrieve
+                  schema:
+                      format: int64
+                      type: integer
+            responses:
+                204:
+                    content:
+                        application/json: {}
+                        application/xml: {}
+                    description:
+                        ""
+                400:
+                    $ref: "#/components/responses/BadRequestException"
+                401:
+                    $ref: "#/components/responses/NotAuthorizedException"
+                403:
+                    $ref: "#/components/responses/ForbiddenException"
+                404:
+                    $ref: "#/components/responses/NotFoundException"
+                405:
+                    $ref: "#/components/responses/NotAllowedException"
+                406:
+                    $ref: "#/components/responses/NotAcceptableException"
+                415:
+                    $ref: "#/components/responses/NotSupportedException"
+                500:
+                    $ref: "#/components/responses/InternalServerErrorException"
+                503:
+                    $ref: "#/components/responses/ServiceUnavailableException"
+        get:
+            operationId: getPet
+            tags: ["Pet"]
+            description: Info for a specific pet
+            parameters:
+                - name: petId
+                  in: path
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Pet"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/Pet"
+                    description: "Pet by Id"
+                400:
+                    $ref: "#/components/responses/BadRequestException"
+                401:
+                    $ref: "#/components/responses/NotAuthorizedException"
+                403:
+                    $ref: "#/components/responses/ForbiddenException"
+                404:
+                    $ref: "#/components/responses/NotFoundException"
+                405:
+                    $ref: "#/components/responses/NotAllowedException"
+                406:
+                    $ref: "#/components/responses/NotAcceptableException"
+                415:
+                    $ref: "#/components/responses/NotSupportedException"
+                500:
+                    $ref: "#/components/responses/InternalServerErrorException"
+                503:
+                    $ref: "#/components/responses/ServiceUnavailableException"
+        put:
+            operationId: putPet
+            tags: ["Pet"]
+            description:
+                Replaces the pet with information sent in the request body. Any missing fields are deleted
+                unless they are required.
+            parameters:
+                - name: petId
+                  in: path
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Pet"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Pet"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Pet"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/Pet"
+                    description:
+                        "Pet successfully replaced"
+                400:
+                    $ref: "#/components/responses/BadRequestException"
+                401:
+                    $ref: "#/components/responses/NotAuthorizedException"
+                403:
+                    $ref: "#/components/responses/ForbiddenException"
+                404:
+                    $ref: "#/components/responses/NotFoundException"
+                405:
+                    $ref: "#/components/responses/NotAllowedException"
+                406:
+                    $ref: "#/components/responses/NotAcceptableException"
+                415:
+                    $ref: "#/components/responses/NotSupportedException"
+                500:
+                    $ref: "#/components/responses/InternalServerErrorException"
+                503:
+                    $ref: "#/components/responses/ServiceUnavailableException"
+        patch:
+            operationId: pathPet
+            tags: ["Pet"]
+            description:
+                Updates the pet with information sent in the request body. Only the provided fields
+                are updated.
+            parameters:
+                - name: petId
+                  in: path
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Pet"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/Pet"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Pet"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/Pet"
+                    description:
+                        "Pet successfully updated"
+                400:
+                    $ref: "#/components/responses/BadRequestException"
+                401:
+                    $ref: "#/components/responses/NotAuthorizedException"
+                403:
+                    $ref: "#/components/responses/ForbiddenException"
+                404:
+                    $ref: "#/components/responses/NotFoundException"
+                405:
+                    $ref: "#/components/responses/NotAllowedException"
+                406:
+                    $ref: "#/components/responses/NotAcceptableException"
+                415:
+                    $ref: "#/components/responses/NotSupportedException"
+                500:
+                    $ref: "#/components/responses/InternalServerErrorException"
+                503:
+                    $ref: "#/components/responses/ServiceUnavailableException"

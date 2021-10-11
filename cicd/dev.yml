@@ -1,0 +1,4 @@
+config:
+  credentials_id: credDeployDev
+  host: 103.163.119.95
+  targetDir: /home/jenkins/app/dogoo-dev

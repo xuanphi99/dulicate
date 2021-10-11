@@ -1,0 +1,11 @@
+Bundle-Name: authz-api
+Bundle-SymbolicName: com.dogoo.authz.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.dogoo.authz.exception,\
+	com.dogoo.authz.model,\
+	com.dogoo.authz.service,\
+	com.dogoo.authz.service.persistence,\
+-check: EXPORTS
+
+-includeresource: META-INF/service.xml=../authz-service/service.xml,\

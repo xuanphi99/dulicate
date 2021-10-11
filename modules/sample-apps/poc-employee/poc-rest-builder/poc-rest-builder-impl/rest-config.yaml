@@ -1,0 +1,9 @@
+apiDir: "../poc-rest-builder-api/src/main/java"
+apiPackagePath: "com.dogoo.employee.rest"
+application:
+    baseURI: "/dogoo/employee-rest-builder"
+    className: "EmployeeRestBuilderApplication"
+    name: "EmployeeRestBuilder"
+author: "longnv"
+clientDir: "../poc-rest-builder-client/src/main/java"
+testDir: "../poc-rest-builder-test/src/testIntegration/java"

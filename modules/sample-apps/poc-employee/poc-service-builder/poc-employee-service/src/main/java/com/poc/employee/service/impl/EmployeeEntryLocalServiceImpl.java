@@ -16,6 +16,7 @@ package com.poc.employee.service.impl;
 
 import com.liferay.portal.aop.AopService;
 
+import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
@@ -154,6 +155,21 @@ public class EmployeeEntryLocalServiceImpl
 	@Indexable(type = IndexableType.REINDEX)
 	public EmployeeEntry getDetailEmployee(String employeeId) throws NoSuchEmployeeEntryException {
 		return employeeEntryPersistence.findByPrimaryKey(employeeId);
+	}
+
+	@Override
+	public IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		IndexableActionableDynamicQuery indexableActionableDynamicQuery =
+				new IndexableActionableDynamicQuery();
+
+		indexableActionableDynamicQuery.setBaseLocalService(
+				employeeEntryLocalService);
+		indexableActionableDynamicQuery.setClassLoader(getClassLoader());
+		indexableActionableDynamicQuery.setModelClass(EmployeeEntry.class);
+
+		indexableActionableDynamicQuery.setPrimaryKeyPropertyName("employeeId");
+
+		return indexableActionableDynamicQuery;
 	}
 
 	@Indexable(type = IndexableType.REINDEX)

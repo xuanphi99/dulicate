@@ -368,6 +368,13 @@ public class EmployeeEntryLocalServiceWrapper
 			uuid, groupId);
 	}
 
+	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery
+		getIndexableActionableDynamicQuery() {
+
+		return _employeeEntryLocalService.getIndexableActionableDynamicQuery();
+	}
+
 	/**
 	 * Returns the OSGi service identifier.
 	 *

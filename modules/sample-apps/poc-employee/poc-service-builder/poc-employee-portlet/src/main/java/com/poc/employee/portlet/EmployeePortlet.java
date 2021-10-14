@@ -55,14 +55,14 @@ public class EmployeePortlet extends MVCPortlet {
 
 	@ProcessAction(name = "addEmployee")
 	public void addStudent(ActionRequest actionRequest, ActionResponse actionResponse) {
-		String pattern = "yyyy-MM-dd hh:mm:ss";
+		String pattern = "yyyy-MM-dd";
 
 		String name = ParamUtil.getString(actionRequest, "name");
 		Date birthDay = ParamUtil.getDate(actionRequest, "birthDay", new SimpleDateFormat(pattern));
 		String gender = ParamUtil.getString(actionRequest, "gender");
 		String address = ParamUtil.getString(actionRequest, "address");
 		String hasAccount = ParamUtil.getString(actionRequest, "hasAccount");
-
+		System.out.println("00"+birthDay);
 		employeeEntryLocalService.addEmployee(
 				name,
 				birthDay,
@@ -101,7 +101,6 @@ public class EmployeePortlet extends MVCPortlet {
 		String gender = ParamUtil.getString(actionRequest, "gender",GetterUtil.DEFAULT_STRING);
 		String address = ParamUtil.getString(actionRequest, "address",GetterUtil.DEFAULT_STRING);
 		String hasAccount = ParamUtil.getString(actionRequest, "hasAccount",GetterUtil.DEFAULT_STRING);
-
 		employeeEntryLocalService.updateEmployee(
 				ParamUtil.getLong(actionRequest, "employeeId", GetterUtil.DEFAULT_LONG),
 				name,

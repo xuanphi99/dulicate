@@ -1,3 +1,5 @@
+<%@ page import="java.util.Date" %>
+<%@ page import="java.text.ParseException" %>
 <%@ include file="init.jsp"%>
 <portlet:defineObjects />
 <h2>Update Employee Form here !</h2>
@@ -6,16 +8,24 @@
 
 <%
     String employeeId = renderRequest.getParameter("employeeId");
-    String birthDay = renderRequest.getParameter("birthDay");
+    String birthDay =  renderRequest.getParameter("birthDay");
     String gender = renderRequest.getParameter("gender");
     String address = renderRequest.getParameter("address");
     String hasAccount = renderRequest.getParameter("hasAccount");
     String name = renderRequest.getParameter("name");
-    String pattern = "yyyy-MM-dd hh:mm:ss";
-    System.out.println(" "+ birthDay );
+    System.out.println(birthDay );
+    Date date1= null;
+
+
 %>
 
 <aui:form action="<%= updateEmployeeActionURL %>" name="employeeForm" method="POST">
+
+
+    <aui:input name="employeeId" type="hidden" value="<%=employeeId%>" >
+        <aui:validator name="number"/>
+    </aui:input>
+
     <aui:input name="name"  >
         <aui:validator name="required"  />
         <aui:validator name="string" />
@@ -23,7 +33,8 @@
 
 
 
-    <input type="date" value="<%=birthDay%>" name="<portlet:namespace/>birthDay">birthDay<br>
+
+    <input type="date" value="<%= date1%>" name="<portlet:namespace/>birthDay">birthDay<br>
 
 
     <b>Gender</b><br/>
@@ -34,10 +45,12 @@
            name="<portlet:namespace/>gender" value="male">Male<br>
     <input type="radio"  <%if(gender.contains("1")){%>checked="checked"<%}%>  name="<portlet:namespace/>gender" value="female">Female<br/>
 
-    <aui:input name="address" >
-        <aui:validator name="required"/>
-        <aui:validator name="string"/>
+    <aui:input name="address"  >
+        <aui:validator name="required"  />
+        <aui:validator name="string" />
     </aui:input>
+
+
 
     <input type="checkbox"
            <%if

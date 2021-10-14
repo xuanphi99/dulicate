@@ -18,7 +18,7 @@
     <%--        <aui:validator name="date"/>--%>
     <%--    </aui:input>--%>
 
-    <input type="date"  name="<portlet:namespace/>birthDay">birthDay<br>
+    <input type="date" name="<portlet:namespace/>birthDay">birthDay<br>
 
 
     <b>Gender</b><br/>

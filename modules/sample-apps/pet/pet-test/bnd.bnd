@@ -1,0 +1,3 @@
+Bundle-Name: pet-test
+Bundle-SymbolicName: com.dogoo.poc.pet.test
+Bundle-Version: 1.0.0

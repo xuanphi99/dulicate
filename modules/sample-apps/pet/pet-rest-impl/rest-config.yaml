@@ -1,0 +1,9 @@
+apiDir: "../pet-rest-api/src/main/java"
+apiPackagePath: "com.dogoo.poc.pet.rest"
+application:
+    baseURI: "/dogoo/pet-rest"
+    className: "PetRestApplication"
+    name: "PetRest"
+author: "khoavu"
+clientDir: "../pet-rest-client/src/main/java"
+testDir: "../pet-rest-test/src/testIntegration/java"

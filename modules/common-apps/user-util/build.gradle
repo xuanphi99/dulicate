@@ -1,0 +1,13 @@
+plugins {
+	id 'jacoco'
+}
+
+
+dependencies {
+	compileOnly group: "com.liferay.portal", name: "release.portal.api"
+
+//	testCompile group: 'org.mockito', name: 'mockito-core', version: '3.6.28'
+//	testCompile group: "com.liferay.portal", name: "com.liferay.portal.test", version: "9.3.4"
+//	testCompile group: "com.liferay.portal", name: "release.portal.api"
+
+}

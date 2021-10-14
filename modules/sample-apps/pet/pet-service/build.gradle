@@ -1,0 +1,12 @@
+dependencies {
+	compile project(":modules:sample-apps:pet:pet-api")
+
+	compileOnly group: "com.liferay.portal", name: "release.portal.api"
+}
+
+buildService {
+	apiDir = "../pet-api/src/main/java"
+	testDir = "../pet-test/src/testIntegration/java"
+}
+
+group = "com.dogoo.poc.pet"

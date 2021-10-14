@@ -1,0 +1,4 @@
+Bundle-Name: poc-rest-builder-test
+Bundle-SymbolicName: com.dogoo.employee.rest.test
+Bundle-Version: 1.0.0
+-includeresource: com.dogoo.employee.rest.client.jar=../poc-rest-builder-client/build/libs/com.dogoo.employee.rest.client-1.0.0.jar;lib:=true

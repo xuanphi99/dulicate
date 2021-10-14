@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="com.dogoo.authz.model.RefreshTokenEntry">
+		<field name="uuid" type="String" />
+		<field name="refreshTokenId" type="long" />
+		<field name="userName" type="String" />
+		<field name="token" type="String" />
+		<field name="expiryDate" type="Date" />
+		<field name="issuedDate" type="Date" />
+		<field name="refreshedDate" type="Date" />
+	</model>
+</model-hints>

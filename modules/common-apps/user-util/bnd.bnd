@@ -1,0 +1,7 @@
+Bundle-Name: user-util
+Bundle-SymbolicName: com.dogoo.common.user
+Bundle-Version: 1.0.0
+Export-Package: \
+    com.dogoo.common.user.api,\
+    com.dogoo.common.user.model,\
+

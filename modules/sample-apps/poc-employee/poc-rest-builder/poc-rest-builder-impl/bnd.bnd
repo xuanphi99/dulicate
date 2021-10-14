@@ -1,0 +1,3 @@
+Bundle-Name: poc-rest-builder-impl
+Bundle-SymbolicName: com.dogoo.employee.rest.impl
+Bundle-Version: 1.0.0

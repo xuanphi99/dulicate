@@ -1,0 +1,11 @@
+dependencies {
+	compile project(":modules:common-apps:authz:authz-api")
+
+	compileOnly group: "com.liferay.portal", name: "release.portal.api"
+}
+
+buildService {
+	apiDir = "../authz-api/src/main/java"
+}
+
+group = "com.dogoo.authz"

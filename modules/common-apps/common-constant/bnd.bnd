@@ -1,0 +1,4 @@
+Bundle-Name: common-constant
+Bundle-SymbolicName: com.dogoo.common.constant
+Bundle-Version: 1.0.0
+Export-Package: com.dogoo.common.constant.api

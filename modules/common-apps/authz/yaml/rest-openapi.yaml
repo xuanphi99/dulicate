@@ -1,0 +1,222 @@
+components:
+  responses:
+    # Descriptions of common responses
+    BadRequestException:
+      description: Request body not meet require
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotAuthorizedException:
+      description: Authentication failure
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ForbiddenException:
+      description: Not permitted to access
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFoundException:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotAllowedException:
+      description: HTTP method not supported
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotAcceptableException:
+      description: Client media type requested not supported
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotSupportedException:
+      description: Client posted media type not supported
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    InternalServerErrorException:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ServiceUnavailableException:
+      description: Server is temporarily unavailable or busy
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    SignIn:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    Token:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+        refreshToken:
+          type: string
+    RefeshToken:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+    Error:
+      type: object
+      properties:
+        status:
+          format: int64
+          readOnly: true
+          type: integer
+          example: 401
+        code:
+          type: string
+          example: DOGOO-100
+        message:
+          type: string
+        developerMessage:
+          type: string
+      required:
+        - code
+        - message
+
+info:
+  description: "AuthzRest REST API"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+  title: "AuthzRest"
+  version: v1.0
+openapi: 3.0.1
+
+paths:
+  "/signin":
+    post:
+      operationId: signIn
+      tags: ["Authz"]
+      description: Signin to DoGoo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignIn"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/SignIn"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Token"
+          description: "Token just created"
+        400:
+          $ref: "#/components/responses/BadRequestException"
+        401:
+          $ref: "#/components/responses/NotAuthorizedException"
+        403:
+          $ref: "#/components/responses/ForbiddenException"
+        404:
+          $ref: "#/components/responses/NotFoundException"
+        405:
+          $ref: "#/components/responses/NotAllowedException"
+        406:
+          $ref: "#/components/responses/NotAcceptableException"
+        415:
+          $ref: "#/components/responses/NotSupportedException"
+        500:
+          $ref: "#/components/responses/InternalServerErrorException"
+        503:
+          $ref: "#/components/responses/ServiceUnavailableException"
+  "/refeshtoken":
+    post:
+      operationId: refeshtoken
+      tags: ["Authz"]
+      description: Refesh token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefeshToken"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/RefeshToken"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Token"
+          description: "Token just refreshed"
+        400:
+          $ref: "#/components/responses/BadRequestException"
+        401:
+          $ref: "#/components/responses/NotAuthorizedException"
+        403:
+          $ref: "#/components/responses/ForbiddenException"
+        404:
+          $ref: "#/components/responses/NotFoundException"
+        405:
+          $ref: "#/components/responses/NotAllowedException"
+        406:
+          $ref: "#/components/responses/NotAcceptableException"
+        415:
+          $ref: "#/components/responses/NotSupportedException"
+        500:
+          $ref: "#/components/responses/InternalServerErrorException"
+        503:
+          $ref: "#/components/responses/ServiceUnavailableException"

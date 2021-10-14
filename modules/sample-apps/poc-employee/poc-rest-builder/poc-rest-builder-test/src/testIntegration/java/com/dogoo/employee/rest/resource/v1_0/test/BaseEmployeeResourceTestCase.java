@@ -3,6 +3,7 @@ package com.dogoo.employee.rest.resource.v1_0.test;
 import com.dogoo.employee.rest.client.dto.v1_0.Employee;
 import com.dogoo.employee.rest.client.http.HttpInvoker;
 import com.dogoo.employee.rest.client.pagination.Page;
+import com.dogoo.employee.rest.client.pagination.Pagination;
 import com.dogoo.employee.rest.client.resource.v1_0.EmployeeResource;
 import com.dogoo.employee.rest.client.serdes.v1_0.EmployeeSerDes;
 
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
+import com.liferay.petra.function.UnsafeTriConsumer;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -33,17 +35,21 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.portal.odata.entity.EntityModel;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import java.text.DateFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +61,7 @@ import javax.annotation.Generated;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -169,7 +176,6 @@ public abstract class BaseEmployeeResourceTestCase {
 		Employee employee = randomEmployee();
 
 		employee.setAddress(regex);
-		employee.setId(regex);
 		employee.setName(regex);
 
 		String json = EmployeeSerDes.toJSON(employee);
@@ -179,7 +185,6 @@ public abstract class BaseEmployeeResourceTestCase {
 		employee = EmployeeSerDes.toDTO(json);
 
 		Assert.assertEquals(regex, employee.getAddress());
-		Assert.assertEquals(regex, employee.getId());
 		Assert.assertEquals(regex, employee.getName());
 	}
 
@@ -195,7 +200,7 @@ public abstract class BaseEmployeeResourceTestCase {
 			404, employeeResource.getEmployeeHttpResponse(employee.getId()));
 
 		assertHttpResponseStatusCode(
-			404, employeeResource.getEmployeeHttpResponse("-"));
+			404, employeeResource.getEmployeeHttpResponse(0L));
 	}
 
 	protected Employee testDeleteEmployee_addEmployee() throws Exception {
@@ -214,9 +219,7 @@ public abstract class BaseEmployeeResourceTestCase {
 						"deleteEmployee",
 						new HashMap<String, Object>() {
 							{
-								put(
-									"employeeId",
-									"\"" + employee.getId() + "\"");
+								put("employeeId", employee.getId());
 							}
 						})),
 				"JSONObject/data", "Object/deleteEmployee"));
@@ -227,7 +230,7 @@ public abstract class BaseEmployeeResourceTestCase {
 					"employee",
 					new HashMap<String, Object>() {
 						{
-							put("employeeId", "\"" + employee.getId() + "\"");
+							put("employeeId", employee.getId());
 						}
 					},
 					new GraphQLField("id"))),
@@ -266,9 +269,7 @@ public abstract class BaseEmployeeResourceTestCase {
 								"employee",
 								new HashMap<String, Object>() {
 									{
-										put(
-											"employeeId",
-											"\"" + employee.getId() + "\"");
+										put("employeeId", employee.getId());
 									}
 								},
 								getGraphQLFields())),
@@ -277,8 +278,7 @@ public abstract class BaseEmployeeResourceTestCase {
 
 	@Test
 	public void testGraphQLGetEmployeeNotFound() throws Exception {
-		String irrelevantEmployeeId =
-			"\"" + RandomTestUtil.randomString() + "\"";
+		Long irrelevantEmployeeId = RandomTestUtil.randomLong();
 
 		Assert.assertEquals(
 			"Not Found",
@@ -322,7 +322,230 @@ public abstract class BaseEmployeeResourceTestCase {
 
 	@Test
 	public void testGetEmployees() throws Exception {
-		Assert.assertTrue(false);
+		Page<Employee> page = employeeResource.getEmployees(
+			RandomTestUtil.randomString(), null, Pagination.of(1, 2), null);
+
+		Assert.assertEquals(0, page.getTotalCount());
+
+		Employee employee1 = testGetEmployees_addEmployee(randomEmployee());
+
+		Employee employee2 = testGetEmployees_addEmployee(randomEmployee());
+
+		page = employeeResource.getEmployees(
+			null, null, Pagination.of(1, 2), null);
+
+		Assert.assertEquals(2, page.getTotalCount());
+
+		assertEqualsIgnoringOrder(
+			Arrays.asList(employee1, employee2),
+			(List<Employee>)page.getItems());
+		assertValid(page);
+
+		employeeResource.deleteEmployee(employee1.getId());
+
+		employeeResource.deleteEmployee(employee2.getId());
+	}
+
+	@Test
+	public void testGetEmployeesWithFilterDateTimeEquals() throws Exception {
+		List<EntityField> entityFields = getEntityFields(
+			EntityField.Type.DATE_TIME);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		Employee employee1 = randomEmployee();
+
+		employee1 = testGetEmployees_addEmployee(employee1);
+
+		for (EntityField entityField : entityFields) {
+			Page<Employee> page = employeeResource.getEmployees(
+				null, getFilterString(entityField, "between", employee1),
+				Pagination.of(1, 2), null);
+
+			assertEquals(
+				Collections.singletonList(employee1),
+				(List<Employee>)page.getItems());
+		}
+	}
+
+	@Test
+	public void testGetEmployeesWithFilterStringEquals() throws Exception {
+		List<EntityField> entityFields = getEntityFields(
+			EntityField.Type.STRING);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		Employee employee1 = testGetEmployees_addEmployee(randomEmployee());
+
+		@SuppressWarnings("PMD.UnusedLocalVariable")
+		Employee employee2 = testGetEmployees_addEmployee(randomEmployee());
+
+		for (EntityField entityField : entityFields) {
+			Page<Employee> page = employeeResource.getEmployees(
+				null, getFilterString(entityField, "eq", employee1),
+				Pagination.of(1, 2), null);
+
+			assertEquals(
+				Collections.singletonList(employee1),
+				(List<Employee>)page.getItems());
+		}
+	}
+
+	@Test
+	public void testGetEmployeesWithPagination() throws Exception {
+		Employee employee1 = testGetEmployees_addEmployee(randomEmployee());
+
+		Employee employee2 = testGetEmployees_addEmployee(randomEmployee());
+
+		Employee employee3 = testGetEmployees_addEmployee(randomEmployee());
+
+		Page<Employee> page1 = employeeResource.getEmployees(
+			null, null, Pagination.of(1, 2), null);
+
+		List<Employee> employees1 = (List<Employee>)page1.getItems();
+
+		Assert.assertEquals(employees1.toString(), 2, employees1.size());
+
+		Page<Employee> page2 = employeeResource.getEmployees(
+			null, null, Pagination.of(2, 2), null);
+
+		Assert.assertEquals(3, page2.getTotalCount());
+
+		List<Employee> employees2 = (List<Employee>)page2.getItems();
+
+		Assert.assertEquals(employees2.toString(), 1, employees2.size());
+
+		Page<Employee> page3 = employeeResource.getEmployees(
+			null, null, Pagination.of(1, 3), null);
+
+		assertEqualsIgnoringOrder(
+			Arrays.asList(employee1, employee2, employee3),
+			(List<Employee>)page3.getItems());
+	}
+
+	@Test
+	public void testGetEmployeesWithSortDateTime() throws Exception {
+		testGetEmployeesWithSort(
+			EntityField.Type.DATE_TIME,
+			(entityField, employee1, employee2) -> {
+				BeanUtils.setProperty(
+					employee1, entityField.getName(),
+					DateUtils.addMinutes(new Date(), -2));
+			});
+	}
+
+	@Test
+	public void testGetEmployeesWithSortInteger() throws Exception {
+		testGetEmployeesWithSort(
+			EntityField.Type.INTEGER,
+			(entityField, employee1, employee2) -> {
+				BeanUtils.setProperty(employee1, entityField.getName(), 0);
+				BeanUtils.setProperty(employee2, entityField.getName(), 1);
+			});
+	}
+
+	@Test
+	public void testGetEmployeesWithSortString() throws Exception {
+		testGetEmployeesWithSort(
+			EntityField.Type.STRING,
+			(entityField, employee1, employee2) -> {
+				Class<?> clazz = employee1.getClass();
+
+				String entityFieldName = entityField.getName();
+
+				Method method = clazz.getMethod(
+					"get" + StringUtil.upperCaseFirstLetter(entityFieldName));
+
+				Class<?> returnType = method.getReturnType();
+
+				if (returnType.isAssignableFrom(Map.class)) {
+					BeanUtils.setProperty(
+						employee1, entityFieldName,
+						Collections.singletonMap("Aaa", "Aaa"));
+					BeanUtils.setProperty(
+						employee2, entityFieldName,
+						Collections.singletonMap("Bbb", "Bbb"));
+				}
+				else if (entityFieldName.contains("email")) {
+					BeanUtils.setProperty(
+						employee1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+					BeanUtils.setProperty(
+						employee2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+				}
+				else {
+					BeanUtils.setProperty(
+						employee1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+					BeanUtils.setProperty(
+						employee2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+				}
+			});
+	}
+
+	protected void testGetEmployeesWithSort(
+			EntityField.Type type,
+			UnsafeTriConsumer<EntityField, Employee, Employee, Exception>
+				unsafeTriConsumer)
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(type);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		Employee employee1 = randomEmployee();
+		Employee employee2 = randomEmployee();
+
+		for (EntityField entityField : entityFields) {
+			unsafeTriConsumer.accept(entityField, employee1, employee2);
+		}
+
+		employee1 = testGetEmployees_addEmployee(employee1);
+
+		employee2 = testGetEmployees_addEmployee(employee2);
+
+		for (EntityField entityField : entityFields) {
+			Page<Employee> ascPage = employeeResource.getEmployees(
+				null, null, Pagination.of(1, 2),
+				entityField.getName() + ":asc");
+
+			assertEquals(
+				Arrays.asList(employee1, employee2),
+				(List<Employee>)ascPage.getItems());
+
+			Page<Employee> descPage = employeeResource.getEmployees(
+				null, null, Pagination.of(1, 2),
+				entityField.getName() + ":desc");
+
+			assertEquals(
+				Arrays.asList(employee2, employee1),
+				(List<Employee>)descPage.getItems());
+		}
+	}
+
+	protected Employee testGetEmployees_addEmployee(Employee employee)
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -331,6 +554,8 @@ public abstract class BaseEmployeeResourceTestCase {
 			"employees",
 			new HashMap<String, Object>() {
 				{
+					put("page", 1);
+					put("pageSize", 2);
 				}
 			},
 			new GraphQLField("items", getGraphQLFields()),
@@ -373,6 +598,9 @@ public abstract class BaseEmployeeResourceTestCase {
 		throw new UnsupportedOperationException(
 			"This method needs to be implemented");
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected Employee testGraphQLEmployee_addEmployee() throws Exception {
 		throw new UnsupportedOperationException(
@@ -769,11 +997,8 @@ public abstract class BaseEmployeeResourceTestCase {
 		}
 
 		if (entityFieldName.equals("id")) {
-			sb.append("'");
-			sb.append(String.valueOf(employee.getId()));
-			sb.append("'");
-
-			return sb.toString();
+			throw new IllegalArgumentException(
+				"Invalid entity field " + entityFieldName);
 		}
 
 		if (entityFieldName.equals("name")) {
@@ -832,7 +1057,7 @@ public abstract class BaseEmployeeResourceTestCase {
 				birthDay = RandomTestUtil.nextDate();
 				gender = RandomTestUtil.randomInt();
 				hasAccount = RandomTestUtil.randomBoolean();
-				id = StringUtil.toLowerCase(RandomTestUtil.randomString());
+				id = RandomTestUtil.randomLong();
 				name = StringUtil.toLowerCase(RandomTestUtil.randomString());
 			}
 		};

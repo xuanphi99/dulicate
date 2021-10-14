@@ -68,7 +68,7 @@ public class EmployeeEntryWrapper
 			setUuid(uuid);
 		}
 
-		String employeeId = (String)attributes.get("employeeId");
+		Long employeeId = (Long)attributes.get("employeeId");
 
 		if (employeeId != null) {
 			setEmployeeId(employeeId);
@@ -187,7 +187,7 @@ public class EmployeeEntryWrapper
 	 * @return the employee ID of this employee entry
 	 */
 	@Override
-	public String getEmployeeId() {
+	public long getEmployeeId() {
 		return model.getEmployeeId();
 	}
 
@@ -247,7 +247,7 @@ public class EmployeeEntryWrapper
 	 * @return the primary key of this employee entry
 	 */
 	@Override
-	public String getPrimaryKey() {
+	public long getPrimaryKey() {
 		return model.getPrimaryKey();
 	}
 
@@ -352,7 +352,7 @@ public class EmployeeEntryWrapper
 	 * @param employeeId the employee ID of this employee entry
 	 */
 	@Override
-	public void setEmployeeId(String employeeId) {
+	public void setEmployeeId(long employeeId) {
 		model.setEmployeeId(employeeId);
 	}
 
@@ -412,7 +412,7 @@ public class EmployeeEntryWrapper
 	 * @param primaryKey the primary key of this employee entry
 	 */
 	@Override
-	public void setPrimaryKey(String primaryKey) {
+	public void setPrimaryKey(long primaryKey) {
 		model.setPrimaryKey(primaryKey);
 	}
 

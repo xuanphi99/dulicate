@@ -154,16 +154,16 @@ public class Employee implements Serializable {
 	protected Boolean hasAccount;
 
 	@Schema(description = "The employee ID.")
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
 	@JsonIgnore
-	public void setId(UnsafeSupplier<String, Exception> idUnsafeSupplier) {
+	public void setId(UnsafeSupplier<Long, Exception> idUnsafeSupplier) {
 		try {
 			id = idUnsafeSupplier.get();
 		}
@@ -177,7 +177,7 @@ public class Employee implements Serializable {
 
 	@GraphQLField(description = "The employee ID.")
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected String id;
+	protected Long id;
 
 	@Schema(description = "The employee Name.")
 	public String getName() {
@@ -290,11 +290,7 @@ public class Employee implements Serializable {
 
 			sb.append("\"id\": ");
 
-			sb.append("\"");
-
-			sb.append(_escape(id));
-
-			sb.append("\"");
+			sb.append(id);
 		}
 
 		if (name != null) {

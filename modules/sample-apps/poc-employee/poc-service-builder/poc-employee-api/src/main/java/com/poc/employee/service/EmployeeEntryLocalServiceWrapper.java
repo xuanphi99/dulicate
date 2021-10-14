@@ -68,7 +68,7 @@ public class EmployeeEntryLocalServiceWrapper
 	 */
 	@Override
 	public com.poc.employee.model.EmployeeEntry createEmployeeEntry(
-		String employeeId) {
+		long employeeId) {
 
 		return _employeeEntryLocalService.createEmployeeEntry(employeeId);
 	}
@@ -85,8 +85,7 @@ public class EmployeeEntryLocalServiceWrapper
 	}
 
 	@Override
-	public com.poc.employee.model.EmployeeEntry deleteEmployee(
-			String employeeId)
+	public com.poc.employee.model.EmployeeEntry deleteEmployee(long employeeId)
 		throws com.poc.employee.exception.NoSuchEmployeeEntryException {
 
 		return _employeeEntryLocalService.deleteEmployee(employeeId);
@@ -122,7 +121,7 @@ public class EmployeeEntryLocalServiceWrapper
 	 */
 	@Override
 	public com.poc.employee.model.EmployeeEntry deleteEmployeeEntry(
-			String employeeId)
+			long employeeId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _employeeEntryLocalService.deleteEmployeeEntry(employeeId);
@@ -244,7 +243,7 @@ public class EmployeeEntryLocalServiceWrapper
 
 	@Override
 	public com.poc.employee.model.EmployeeEntry fetchEmployeeEntry(
-		String employeeId) {
+		long employeeId) {
 
 		return _employeeEntryLocalService.fetchEmployeeEntry(employeeId);
 	}
@@ -265,8 +264,15 @@ public class EmployeeEntryLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery
+		getActionableDynamicQuery() {
+
+		return _employeeEntryLocalService.getActionableDynamicQuery();
+	}
+
+	@Override
 	public com.poc.employee.model.EmployeeEntry getDetailEmployee(
-			String employeeId)
+			long employeeId)
 		throws com.poc.employee.exception.NoSuchEmployeeEntryException {
 
 		return _employeeEntryLocalService.getDetailEmployee(employeeId);
@@ -345,7 +351,7 @@ public class EmployeeEntryLocalServiceWrapper
 	 */
 	@Override
 	public com.poc.employee.model.EmployeeEntry getEmployeeEntry(
-			String employeeId)
+			long employeeId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _employeeEntryLocalService.getEmployeeEntry(employeeId);
@@ -366,6 +372,23 @@ public class EmployeeEntryLocalServiceWrapper
 
 		return _employeeEntryLocalService.getEmployeeEntryByUuidAndGroupId(
 			uuid, groupId);
+	}
+
+	@Override
+	public java.util.List<com.poc.employee.model.EmployeeEntry> getEmployees(
+		int start, int end) {
+
+		return _employeeEntryLocalService.getEmployees(start, end);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery
+		getExportActionableDynamicQuery(
+			com.liferay.exportimport.kernel.lar.PortletDataContext
+				portletDataContext) {
+
+		return _employeeEntryLocalService.getExportActionableDynamicQuery(
+			portletDataContext);
 	}
 
 	@Override
@@ -397,15 +420,8 @@ public class EmployeeEntryLocalServiceWrapper
 	}
 
 	@Override
-	public java.util.List<com.poc.employee.model.EmployeeEntry> getStudents(
-		int start, int end) {
-
-		return _employeeEntryLocalService.getStudents(start, end);
-	}
-
-	@Override
 	public com.poc.employee.model.EmployeeEntry patchEmployee(
-			String employeeId, String name, java.util.Date birthDay, int gender,
+			long employeeId, String name, java.util.Date birthDay, int gender,
 			String address, boolean hasAccount,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -417,7 +433,7 @@ public class EmployeeEntryLocalServiceWrapper
 
 	@Override
 	public com.poc.employee.model.EmployeeEntry updateEmployee(
-			String employeeId, String name, java.util.Date birthDay, int gender,
+			long employeeId, String name, java.util.Date birthDay, int gender,
 			String address, boolean hasAccount,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {

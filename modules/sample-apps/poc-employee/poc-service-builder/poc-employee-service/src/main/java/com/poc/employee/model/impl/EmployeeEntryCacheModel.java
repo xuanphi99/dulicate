@@ -49,7 +49,7 @@ public class EmployeeEntryCacheModel
 		EmployeeEntryCacheModel employeeEntryCacheModel =
 			(EmployeeEntryCacheModel)object;
 
-		if (employeeId.equals(employeeEntryCacheModel.employeeId)) {
+		if (employeeId == employeeEntryCacheModel.employeeId) {
 			return true;
 		}
 
@@ -107,13 +107,7 @@ public class EmployeeEntryCacheModel
 			employeeEntryImpl.setUuid(uuid);
 		}
 
-		if (employeeId == null) {
-			employeeEntryImpl.setEmployeeId("");
-		}
-		else {
-			employeeEntryImpl.setEmployeeId(employeeId);
-		}
-
+		employeeEntryImpl.setEmployeeId(employeeId);
 		employeeEntryImpl.setGroupId(groupId);
 		employeeEntryImpl.setCompanyId(companyId);
 		employeeEntryImpl.setUserId(userId);
@@ -172,7 +166,8 @@ public class EmployeeEntryCacheModel
 	@Override
 	public void readExternal(ObjectInput objectInput) throws IOException {
 		uuid = objectInput.readUTF();
-		employeeId = objectInput.readUTF();
+
+		employeeId = objectInput.readLong();
 
 		groupId = objectInput.readLong();
 
@@ -200,12 +195,7 @@ public class EmployeeEntryCacheModel
 			objectOutput.writeUTF(uuid);
 		}
 
-		if (employeeId == null) {
-			objectOutput.writeUTF("");
-		}
-		else {
-			objectOutput.writeUTF(employeeId);
-		}
+		objectOutput.writeLong(employeeId);
 
 		objectOutput.writeLong(groupId);
 
@@ -245,7 +235,7 @@ public class EmployeeEntryCacheModel
 	}
 
 	public String uuid;
-	public String employeeId;
+	public long employeeId;
 	public long groupId;
 	public long companyId;
 	public long userId;

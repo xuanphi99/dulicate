@@ -3,6 +3,7 @@ package com.dogoo.employee.rest.client.resource.v1_0;
 import com.dogoo.employee.rest.client.dto.v1_0.Employee;
 import com.dogoo.employee.rest.client.http.HttpInvoker;
 import com.dogoo.employee.rest.client.pagination.Page;
+import com.dogoo.employee.rest.client.pagination.Pagination;
 import com.dogoo.employee.rest.client.problem.Problem;
 import com.dogoo.employee.rest.client.serdes.v1_0.EmployeeSerDes;
 
@@ -25,10 +26,9 @@ public interface EmployeeResource {
 		return new Builder();
 	}
 
-	public void deleteEmployee(String employeeId) throws Exception;
+	public void deleteEmployee(Long employeeId) throws Exception;
 
-	public HttpInvoker.HttpResponse deleteEmployeeHttpResponse(
-			String employeeId)
+	public HttpInvoker.HttpResponse deleteEmployeeHttpResponse(Long employeeId)
 		throws Exception;
 
 	public void deleteEmployeeBatch(String callbackURL, Object object)
@@ -38,16 +38,16 @@ public interface EmployeeResource {
 			String callbackURL, Object object)
 		throws Exception;
 
-	public Employee getEmployee(String employeeId) throws Exception;
+	public Employee getEmployee(Long employeeId) throws Exception;
 
-	public HttpInvoker.HttpResponse getEmployeeHttpResponse(String employeeId)
+	public HttpInvoker.HttpResponse getEmployeeHttpResponse(Long employeeId)
 		throws Exception;
 
-	public Employee putEmployee(String employeeId, Employee employee)
+	public Employee putEmployee(Long employeeId, Employee employee)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse putEmployeeHttpResponse(
-			String employeeId, Employee employee)
+			Long employeeId, Employee employee)
 		throws Exception;
 
 	public void putEmployeeBatch(String callbackURL, Object object)
@@ -57,9 +57,15 @@ public interface EmployeeResource {
 			String callbackURL, Object object)
 		throws Exception;
 
-	public Page<Employee> getEmployees() throws Exception;
+	public Page<Employee> getEmployees(
+			String search, String filterString, Pagination pagination,
+			String sortString)
+		throws Exception;
 
-	public HttpInvoker.HttpResponse getEmployeesHttpResponse() throws Exception;
+	public HttpInvoker.HttpResponse getEmployeesHttpResponse(
+			String search, String filterString, Pagination pagination,
+			String sortString)
+		throws Exception;
 
 	public Employee addEmployee(Employee employee) throws Exception;
 
@@ -137,7 +143,7 @@ public interface EmployeeResource {
 
 	public static class EmployeeResourceImpl implements EmployeeResource {
 
-		public void deleteEmployee(String employeeId) throws Exception {
+		public void deleteEmployee(Long employeeId) throws Exception {
 			HttpInvoker.HttpResponse httpResponse = deleteEmployeeHttpResponse(
 				employeeId);
 
@@ -179,7 +185,7 @@ public interface EmployeeResource {
 		}
 
 		public HttpInvoker.HttpResponse deleteEmployeeHttpResponse(
-				String employeeId)
+				Long employeeId)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -289,7 +295,7 @@ public interface EmployeeResource {
 			return httpInvoker.invoke();
 		}
 
-		public Employee getEmployee(String employeeId) throws Exception {
+		public Employee getEmployee(Long employeeId) throws Exception {
 			HttpInvoker.HttpResponse httpResponse = getEmployeeHttpResponse(
 				employeeId);
 
@@ -330,8 +336,7 @@ public interface EmployeeResource {
 			}
 		}
 
-		public HttpInvoker.HttpResponse getEmployeeHttpResponse(
-				String employeeId)
+		public HttpInvoker.HttpResponse getEmployeeHttpResponse(Long employeeId)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -368,7 +373,7 @@ public interface EmployeeResource {
 			return httpInvoker.invoke();
 		}
 
-		public Employee putEmployee(String employeeId, Employee employee)
+		public Employee putEmployee(Long employeeId, Employee employee)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse = putEmployeeHttpResponse(
@@ -412,7 +417,7 @@ public interface EmployeeResource {
 		}
 
 		public HttpInvoker.HttpResponse putEmployeeHttpResponse(
-				String employeeId, Employee employee)
+				Long employeeId, Employee employee)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -526,8 +531,13 @@ public interface EmployeeResource {
 			return httpInvoker.invoke();
 		}
 
-		public Page<Employee> getEmployees() throws Exception {
-			HttpInvoker.HttpResponse httpResponse = getEmployeesHttpResponse();
+		public Page<Employee> getEmployees(
+				String search, String filterString, Pagination pagination,
+				String sortString)
+			throws Exception {
+
+			HttpInvoker.HttpResponse httpResponse = getEmployeesHttpResponse(
+				search, filterString, pagination, sortString);
 
 			String content = httpResponse.getContent();
 
@@ -566,7 +576,9 @@ public interface EmployeeResource {
 			}
 		}
 
-		public HttpInvoker.HttpResponse getEmployeesHttpResponse()
+		public HttpInvoker.HttpResponse getEmployeesHttpResponse(
+				String search, String filterString, Pagination pagination,
+				String sortString)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -589,6 +601,25 @@ public interface EmployeeResource {
 			}
 
 			httpInvoker.httpMethod(HttpInvoker.HttpMethod.GET);
+
+			if (search != null) {
+				httpInvoker.parameter("search", String.valueOf(search));
+			}
+
+			if (filterString != null) {
+				httpInvoker.parameter("filter", filterString);
+			}
+
+			if (pagination != null) {
+				httpInvoker.parameter(
+					"page", String.valueOf(pagination.getPage()));
+				httpInvoker.parameter(
+					"pageSize", String.valueOf(pagination.getPageSize()));
+			}
+
+			if (sortString != null) {
+				httpInvoker.parameter("sort", sortString);
+			}
 
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +

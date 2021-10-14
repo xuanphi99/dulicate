@@ -14,6 +14,8 @@
 
 package com.poc.employee.model.impl;
 
+import com.liferay.expando.kernel.model.ExpandoBridge;
+import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
@@ -23,6 +25,7 @@ import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.model.ModelWrapper;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.impl.BaseModelImpl;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -73,7 +76,7 @@ public class EmployeeEntryModelImpl
 	public static final String TABLE_NAME = "DG_EmployeeEntry";
 
 	public static final Object[][] TABLE_COLUMNS = {
-		{"uuid_", Types.VARCHAR}, {"employeeId", Types.VARCHAR},
+		{"uuid_", Types.VARCHAR}, {"employeeId", Types.BIGINT},
 		{"groupId", Types.BIGINT}, {"companyId", Types.BIGINT},
 		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
 		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
@@ -87,7 +90,7 @@ public class EmployeeEntryModelImpl
 
 	static {
 		TABLE_COLUMNS_MAP.put("uuid_", Types.VARCHAR);
-		TABLE_COLUMNS_MAP.put("employeeId", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("employeeId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("groupId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("userId", Types.BIGINT);
@@ -102,7 +105,7 @@ public class EmployeeEntryModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table DG_EmployeeEntry (uuid_ VARCHAR(75) null,employeeId VARCHAR(75) not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,name VARCHAR(75) null,birthDay DATE null,gender INTEGER,address VARCHAR(75) null,hasAccount BOOLEAN)";
+		"create table DG_EmployeeEntry (uuid_ VARCHAR(75) null,employeeId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,name VARCHAR(75) null,birthDay DATE null,gender INTEGER,address VARCHAR(75) null,hasAccount BOOLEAN)";
 
 	public static final String TABLE_SQL_DROP = "drop table DG_EmployeeEntry";
 
@@ -215,12 +218,12 @@ public class EmployeeEntryModelImpl
 	}
 
 	@Override
-	public String getPrimaryKey() {
+	public long getPrimaryKey() {
 		return _employeeId;
 	}
 
 	@Override
-	public void setPrimaryKey(String primaryKey) {
+	public void setPrimaryKey(long primaryKey) {
 		setEmployeeId(primaryKey);
 	}
 
@@ -231,7 +234,7 @@ public class EmployeeEntryModelImpl
 
 	@Override
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		setPrimaryKey((String)primaryKeyObj);
+		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
 	@Override
@@ -342,7 +345,7 @@ public class EmployeeEntryModelImpl
 			"employeeId", EmployeeEntry::getEmployeeId);
 		attributeSetterBiConsumers.put(
 			"employeeId",
-			(BiConsumer<EmployeeEntry, String>)EmployeeEntry::setEmployeeId);
+			(BiConsumer<EmployeeEntry, Long>)EmployeeEntry::setEmployeeId);
 		attributeGetterFunctions.put("groupId", EmployeeEntry::getGroupId);
 		attributeSetterBiConsumers.put(
 			"groupId",
@@ -427,17 +430,12 @@ public class EmployeeEntryModelImpl
 
 	@JSON
 	@Override
-	public String getEmployeeId() {
-		if (_employeeId == null) {
-			return "";
-		}
-		else {
-			return _employeeId;
-		}
+	public long getEmployeeId() {
+		return _employeeId;
 	}
 
 	@Override
-	public void setEmployeeId(String employeeId) {
+	public void setEmployeeId(long employeeId) {
 		if (_columnOriginalValues == Collections.EMPTY_MAP) {
 			_setColumnOriginalValues();
 		}
@@ -712,6 +710,19 @@ public class EmployeeEntryModelImpl
 	}
 
 	@Override
+	public ExpandoBridge getExpandoBridge() {
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(
+			getCompanyId(), EmployeeEntry.class.getName(), getPrimaryKey());
+	}
+
+	@Override
+	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
+		ExpandoBridge expandoBridge = getExpandoBridge();
+
+		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
 	public EmployeeEntry toEscapedModel() {
 		if (_escapedModel == null) {
 			Function<InvocationHandler, EmployeeEntry>
@@ -774,9 +785,9 @@ public class EmployeeEntryModelImpl
 
 		EmployeeEntry employeeEntry = (EmployeeEntry)object;
 
-		String primaryKey = employeeEntry.getPrimaryKey();
+		long primaryKey = employeeEntry.getPrimaryKey();
 
-		if (getPrimaryKey().equals(primaryKey)) {
+		if (getPrimaryKey() == primaryKey) {
 			return true;
 		}
 		else {
@@ -786,7 +797,7 @@ public class EmployeeEntryModelImpl
 
 	@Override
 	public int hashCode() {
-		return getPrimaryKey().hashCode();
+		return (int)getPrimaryKey();
 	}
 
 	/**
@@ -830,12 +841,6 @@ public class EmployeeEntryModelImpl
 		}
 
 		employeeEntryCacheModel.employeeId = getEmployeeId();
-
-		String employeeId = employeeEntryCacheModel.employeeId;
-
-		if ((employeeId != null) && (employeeId.length() == 0)) {
-			employeeEntryCacheModel.employeeId = null;
-		}
 
 		employeeEntryCacheModel.groupId = getGroupId();
 
@@ -972,7 +977,7 @@ public class EmployeeEntryModelImpl
 	}
 
 	private String _uuid;
-	private String _employeeId;
+	private long _employeeId;
 	private long _groupId;
 	private long _companyId;
 	private long _userId;

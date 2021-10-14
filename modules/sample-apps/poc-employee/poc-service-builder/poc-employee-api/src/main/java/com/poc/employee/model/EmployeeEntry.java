@@ -36,17 +36,17 @@ public interface EmployeeEntry extends EmployeeEntryModel, PersistedModel {
 	 *
 	 * Never modify this interface directly. Add methods to <code>com.poc.employee.model.impl.EmployeeEntryImpl</code> and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
-	public static final Accessor<EmployeeEntry, String> EMPLOYEE_ID_ACCESSOR =
-		new Accessor<EmployeeEntry, String>() {
+	public static final Accessor<EmployeeEntry, Long> EMPLOYEE_ID_ACCESSOR =
+		new Accessor<EmployeeEntry, Long>() {
 
 			@Override
-			public String get(EmployeeEntry employeeEntry) {
+			public Long get(EmployeeEntry employeeEntry) {
 				return employeeEntry.getEmployeeId();
 			}
 
 			@Override
-			public Class<String> getAttributeClass() {
-				return String.class;
+			public Class<Long> getAttributeClass() {
+				return Long.class;
 			}
 
 			@Override

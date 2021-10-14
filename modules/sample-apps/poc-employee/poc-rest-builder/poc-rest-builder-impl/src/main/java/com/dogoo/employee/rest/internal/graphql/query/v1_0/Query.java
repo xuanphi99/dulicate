@@ -13,6 +13,7 @@ import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLName;
 import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.vulcan.pagination.Pagination;
 
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -47,7 +48,7 @@ public class Query {
 	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {employee(employeeId: ___){id, name, birthDay, gender, address, hasAccount}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField
-	public Employee employee(@GraphQLName("employeeId") String employeeId)
+	public Employee employee(@GraphQLName("employeeId") Long employeeId)
 		throws Exception {
 
 		return _applyComponentServiceObjects(
@@ -59,15 +60,28 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {employees{items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {employees(filter: ___, page: ___, pageSize: ___, search: ___, sorts: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
 	 */
-	@GraphQLField
-	public EmployeePage employees() throws Exception {
+	@GraphQLField(
+		description = "Retrieves the pets. Results can be paginated, filtered, searched, and sorted."
+	)
+	public EmployeePage employees(
+			@GraphQLName("search") String search,
+			@GraphQLName("filter") String filterString,
+			@GraphQLName("pageSize") int pageSize,
+			@GraphQLName("page") int page,
+			@GraphQLName("sort") String sortsString)
+		throws Exception {
+
 		return _applyComponentServiceObjects(
 			_employeeResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			employeeResource -> new EmployeePage(
-				employeeResource.getEmployees()));
+				employeeResource.getEmployees(
+					search,
+					_filterBiFunction.apply(employeeResource, filterString),
+					Pagination.of(page, pageSize),
+					_sortsBiFunction.apply(employeeResource, sortsString))));
 	}
 
 	@GraphQLName("EmployeePage")

@@ -14,8 +14,11 @@
 
 package com.poc.employee.service;
 
+import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -92,7 +95,7 @@ public interface EmployeeEntryLocalService
 	 * @return the new employee entry
 	 */
 	@Transactional(enabled = false)
-	public EmployeeEntry createEmployeeEntry(String employeeId);
+	public EmployeeEntry createEmployeeEntry(long employeeId);
 
 	/**
 	 * @throws PortalException
@@ -101,7 +104,7 @@ public interface EmployeeEntryLocalService
 		throws PortalException;
 
 	@Indexable(type = IndexableType.REINDEX)
-	public EmployeeEntry deleteEmployee(String employeeId)
+	public EmployeeEntry deleteEmployee(long employeeId)
 		throws NoSuchEmployeeEntryException;
 
 	/**
@@ -129,7 +132,7 @@ public interface EmployeeEntryLocalService
 	 * @throws PortalException if a employee entry with the primary key could not be found
 	 */
 	@Indexable(type = IndexableType.DELETE)
-	public EmployeeEntry deleteEmployeeEntry(String employeeId)
+	public EmployeeEntry deleteEmployeeEntry(long employeeId)
 		throws PortalException;
 
 	/**
@@ -212,7 +215,7 @@ public interface EmployeeEntryLocalService
 		DynamicQuery dynamicQuery, Projection projection);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public EmployeeEntry fetchEmployeeEntry(String employeeId);
+	public EmployeeEntry fetchEmployeeEntry(long employeeId);
 
 	/**
 	 * Returns the employee entry matching the UUID and group.
@@ -225,9 +228,12 @@ public interface EmployeeEntryLocalService
 	public EmployeeEntry fetchEmployeeEntryByUuidAndGroupId(
 		String uuid, long groupId);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public ActionableDynamicQuery getActionableDynamicQuery();
+
 	@Indexable(type = IndexableType.REINDEX)
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public EmployeeEntry getDetailEmployee(String employeeId)
+	public EmployeeEntry getDetailEmployee(long employeeId)
 		throws NoSuchEmployeeEntryException;
 
 	/**
@@ -286,7 +292,7 @@ public interface EmployeeEntryLocalService
 	 * @throws PortalException if a employee entry with the primary key could not be found
 	 */
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public EmployeeEntry getEmployeeEntry(String employeeId)
+	public EmployeeEntry getEmployeeEntry(long employeeId)
 		throws PortalException;
 
 	/**
@@ -301,6 +307,14 @@ public interface EmployeeEntryLocalService
 	public EmployeeEntry getEmployeeEntryByUuidAndGroupId(
 			String uuid, long groupId)
 		throws PortalException;
+
+	@Indexable(type = IndexableType.REINDEX)
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<EmployeeEntry> getEmployees(int start, int end);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public ExportActionableDynamicQuery getExportActionableDynamicQuery(
+		PortletDataContext portletDataContext);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public IndexableActionableDynamicQuery getIndexableActionableDynamicQuery();
@@ -321,20 +335,16 @@ public interface EmployeeEntryLocalService
 		throws PortalException;
 
 	@Indexable(type = IndexableType.REINDEX)
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<EmployeeEntry> getStudents(int start, int end);
-
-	@Indexable(type = IndexableType.REINDEX)
 	@SystemEvent(type = SystemEventConstants.TYPE_DEFAULT)
 	public EmployeeEntry patchEmployee(
-			String employeeId, String name, Date birthDay, int gender,
+			long employeeId, String name, Date birthDay, int gender,
 			String address, boolean hasAccount, ServiceContext serviceContext)
 		throws PortalException;
 
 	@Indexable(type = IndexableType.REINDEX)
 	@SystemEvent(type = SystemEventConstants.TYPE_DEFAULT)
 	public EmployeeEntry updateEmployee(
-			String employeeId, String name, Date birthDay, int gender,
+			long employeeId, String name, Date birthDay, int gender,
 			String address, boolean hasAccount, ServiceContext serviceContext)
 		throws PortalException;
 

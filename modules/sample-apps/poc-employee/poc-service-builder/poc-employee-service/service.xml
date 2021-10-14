@@ -9,7 +9,7 @@
 
 		<!-- PK fields -->
 
-		<column name="employeeId" primary="true" type="String" />
+		<column name="employeeId" primary="true" type="long" />
 
 		<!-- Group instance -->
 

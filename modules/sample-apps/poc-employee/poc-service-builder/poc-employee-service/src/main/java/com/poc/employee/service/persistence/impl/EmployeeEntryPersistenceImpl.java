@@ -397,7 +397,7 @@ public class EmployeeEntryPersistenceImpl
 	 */
 	@Override
 	public EmployeeEntry[] findByUuid_PrevAndNext(
-			String employeeId, String uuid,
+			long employeeId, String uuid,
 			OrderByComparator<EmployeeEntry> orderByComparator)
 		throws NoSuchEmployeeEntryException {
 
@@ -1209,7 +1209,7 @@ public class EmployeeEntryPersistenceImpl
 	 */
 	@Override
 	public EmployeeEntry[] findByUuid_C_PrevAndNext(
-			String employeeId, String uuid, long companyId,
+			long employeeId, String uuid, long companyId,
 			OrderByComparator<EmployeeEntry> orderByComparator)
 		throws NoSuchEmployeeEntryException {
 
@@ -1758,7 +1758,7 @@ public class EmployeeEntryPersistenceImpl
 	 */
 	@Override
 	public EmployeeEntry[] findByname_PrevAndNext(
-			String employeeId, String name,
+			long employeeId, String name,
 			OrderByComparator<EmployeeEntry> orderByComparator)
 		throws NoSuchEmployeeEntryException {
 
@@ -2003,7 +2003,7 @@ public class EmployeeEntryPersistenceImpl
 		setModelClass(EmployeeEntry.class);
 
 		setModelImplClass(EmployeeEntryImpl.class);
-		setModelPKClass(String.class);
+		setModelPKClass(long.class);
 
 		setTable(EmployeeEntryTable.INSTANCE);
 	}
@@ -2104,7 +2104,7 @@ public class EmployeeEntryPersistenceImpl
 	 * @return the new employee entry
 	 */
 	@Override
-	public EmployeeEntry create(String employeeId) {
+	public EmployeeEntry create(long employeeId) {
 		EmployeeEntry employeeEntry = new EmployeeEntryImpl();
 
 		employeeEntry.setNew(true);
@@ -2127,7 +2127,7 @@ public class EmployeeEntryPersistenceImpl
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
 	@Override
-	public EmployeeEntry remove(String employeeId)
+	public EmployeeEntry remove(long employeeId)
 		throws NoSuchEmployeeEntryException {
 
 		return remove((Serializable)employeeId);
@@ -2324,7 +2324,7 @@ public class EmployeeEntryPersistenceImpl
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
 	@Override
-	public EmployeeEntry findByPrimaryKey(String employeeId)
+	public EmployeeEntry findByPrimaryKey(long employeeId)
 		throws NoSuchEmployeeEntryException {
 
 		return findByPrimaryKey((Serializable)employeeId);
@@ -2337,7 +2337,7 @@ public class EmployeeEntryPersistenceImpl
 	 * @return the employee entry, or <code>null</code> if a employee entry with the primary key could not be found
 	 */
 	@Override
-	public EmployeeEntry fetchByPrimaryKey(String employeeId) {
+	public EmployeeEntry fetchByPrimaryKey(long employeeId) {
 		return fetchByPrimaryKey((Serializable)employeeId);
 	}
 

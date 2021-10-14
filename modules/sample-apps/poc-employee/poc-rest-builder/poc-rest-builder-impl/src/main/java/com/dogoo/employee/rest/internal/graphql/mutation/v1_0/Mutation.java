@@ -40,7 +40,7 @@ public class Mutation {
 	}
 
 	@GraphQLField
-	public boolean deleteEmployee(@GraphQLName("employeeId") String employeeId)
+	public boolean deleteEmployee(@GraphQLName("employeeId") Long employeeId)
 		throws Exception {
 
 		_applyVoidComponentServiceObjects(
@@ -66,7 +66,7 @@ public class Mutation {
 
 	@GraphQLField
 	public Employee updateEmployee(
-			@GraphQLName("employeeId") String employeeId,
+			@GraphQLName("employeeId") Long employeeId,
 			@GraphQLName("employee") Employee employee)
 		throws Exception {
 

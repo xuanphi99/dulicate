@@ -1,6 +1,6 @@
 create table DG_EmployeeEntry (
 	uuid_ VARCHAR(75) null,
-	employeeId VARCHAR(75) not null primary key,
+	employeeId LONG not null primary key,
 	groupId LONG,
 	companyId LONG,
 	userId LONG,

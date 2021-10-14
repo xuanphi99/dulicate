@@ -3,7 +3,7 @@
 <model-hints>
 	<model name="com.poc.employee.model.EmployeeEntry">
 		<field name="uuid" type="String" />
-		<field name="employeeId" type="String" />
+		<field name="employeeId" type="long" />
 		<field name="groupId" type="long" />
 		<field name="companyId" type="long" />
 		<field name="userId" type="long" />

@@ -14,14 +14,23 @@
 
 package com.poc.employee.service.base;
 
+import com.liferay.exportimport.kernel.lar.ExportImportHelperUtil;
+import com.liferay.exportimport.kernel.lar.ManifestSummary;
+import com.liferay.exportimport.kernel.lar.PortletDataContext;
+import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
+import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.petra.sql.dsl.query.DSLQuery;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DefaultActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
+import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -99,7 +108,7 @@ public abstract class EmployeeEntryLocalServiceBaseImpl
 	 */
 	@Override
 	@Transactional(enabled = false)
-	public EmployeeEntry createEmployeeEntry(String employeeId) {
+	public EmployeeEntry createEmployeeEntry(long employeeId) {
 		return employeeEntryPersistence.create(employeeId);
 	}
 
@@ -116,7 +125,7 @@ public abstract class EmployeeEntryLocalServiceBaseImpl
 	 */
 	@Indexable(type = IndexableType.DELETE)
 	@Override
-	public EmployeeEntry deleteEmployeeEntry(String employeeId)
+	public EmployeeEntry deleteEmployeeEntry(long employeeId)
 		throws PortalException {
 
 		return employeeEntryPersistence.remove(employeeId);
@@ -238,7 +247,7 @@ public abstract class EmployeeEntryLocalServiceBaseImpl
 	}
 
 	@Override
-	public EmployeeEntry fetchEmployeeEntry(String employeeId) {
+	public EmployeeEntry fetchEmployeeEntry(long employeeId) {
 		return employeeEntryPersistence.fetchByPrimaryKey(employeeId);
 	}
 
@@ -264,10 +273,117 @@ public abstract class EmployeeEntryLocalServiceBaseImpl
 	 * @throws PortalException if a employee entry with the primary key could not be found
 	 */
 	@Override
-	public EmployeeEntry getEmployeeEntry(String employeeId)
+	public EmployeeEntry getEmployeeEntry(long employeeId)
 		throws PortalException {
 
 		return employeeEntryPersistence.findByPrimaryKey(employeeId);
+	}
+
+	@Override
+	public ActionableDynamicQuery getActionableDynamicQuery() {
+		ActionableDynamicQuery actionableDynamicQuery =
+			new DefaultActionableDynamicQuery();
+
+		actionableDynamicQuery.setBaseLocalService(employeeEntryLocalService);
+		actionableDynamicQuery.setClassLoader(getClassLoader());
+		actionableDynamicQuery.setModelClass(EmployeeEntry.class);
+
+		actionableDynamicQuery.setPrimaryKeyPropertyName("employeeId");
+
+		return actionableDynamicQuery;
+	}
+
+	@Override
+	public IndexableActionableDynamicQuery
+		getIndexableActionableDynamicQuery() {
+
+		IndexableActionableDynamicQuery indexableActionableDynamicQuery =
+			new IndexableActionableDynamicQuery();
+
+		indexableActionableDynamicQuery.setBaseLocalService(
+			employeeEntryLocalService);
+		indexableActionableDynamicQuery.setClassLoader(getClassLoader());
+		indexableActionableDynamicQuery.setModelClass(EmployeeEntry.class);
+
+		indexableActionableDynamicQuery.setPrimaryKeyPropertyName("employeeId");
+
+		return indexableActionableDynamicQuery;
+	}
+
+	protected void initActionableDynamicQuery(
+		ActionableDynamicQuery actionableDynamicQuery) {
+
+		actionableDynamicQuery.setBaseLocalService(employeeEntryLocalService);
+		actionableDynamicQuery.setClassLoader(getClassLoader());
+		actionableDynamicQuery.setModelClass(EmployeeEntry.class);
+
+		actionableDynamicQuery.setPrimaryKeyPropertyName("employeeId");
+	}
+
+	@Override
+	public ExportActionableDynamicQuery getExportActionableDynamicQuery(
+		final PortletDataContext portletDataContext) {
+
+		final ExportActionableDynamicQuery exportActionableDynamicQuery =
+			new ExportActionableDynamicQuery() {
+
+				@Override
+				public long performCount() throws PortalException {
+					ManifestSummary manifestSummary =
+						portletDataContext.getManifestSummary();
+
+					StagedModelType stagedModelType = getStagedModelType();
+
+					long modelAdditionCount = super.performCount();
+
+					manifestSummary.addModelAdditionCount(
+						stagedModelType, modelAdditionCount);
+
+					long modelDeletionCount =
+						ExportImportHelperUtil.getModelDeletionCount(
+							portletDataContext, stagedModelType);
+
+					manifestSummary.addModelDeletionCount(
+						stagedModelType, modelDeletionCount);
+
+					return modelAdditionCount;
+				}
+
+			};
+
+		initActionableDynamicQuery(exportActionableDynamicQuery);
+
+		exportActionableDynamicQuery.setAddCriteriaMethod(
+			new ActionableDynamicQuery.AddCriteriaMethod() {
+
+				@Override
+				public void addCriteria(DynamicQuery dynamicQuery) {
+					portletDataContext.addDateRangeCriteria(
+						dynamicQuery, "modifiedDate");
+				}
+
+			});
+
+		exportActionableDynamicQuery.setCompanyId(
+			portletDataContext.getCompanyId());
+
+		exportActionableDynamicQuery.setPerformActionMethod(
+			new ActionableDynamicQuery.PerformActionMethod<EmployeeEntry>() {
+
+				@Override
+				public void performAction(EmployeeEntry employeeEntry)
+					throws PortalException {
+
+					StagedModelDataHandlerUtil.exportStagedModel(
+						portletDataContext, employeeEntry);
+				}
+
+			});
+		exportActionableDynamicQuery.setStagedModelType(
+			new StagedModelType(
+				PortalUtil.getClassNameId(EmployeeEntry.class.getName())));
+
+		return exportActionableDynamicQuery;
 	}
 
 	/**
@@ -277,7 +393,8 @@ public abstract class EmployeeEntryLocalServiceBaseImpl
 	public PersistedModel createPersistedModel(Serializable primaryKeyObj)
 		throws PortalException {
 
-		return employeeEntryPersistence.create((String)primaryKeyObj);
+		return employeeEntryPersistence.create(
+			((Long)primaryKeyObj).longValue());
 	}
 
 	/**

@@ -28,7 +28,8 @@ public class EmployeeValidator {
 
     }
 
-    public void valiadatorForAddEmployee(Employee employee) {
+    public void validatorForAddEmployee(Employee employee) {
+
         checkRequiredField(employee.getName(),NAME_REQUEST);
         checkRequiredField(employee.getAddress(),ADDRESS_REQUEST);
         checkRequiredField(employee.getBirthDay().toString(),BIRTHDAY_REQUEST);
@@ -36,7 +37,7 @@ public class EmployeeValidator {
         checkRequiredField(employee.getHasAccount().toString(), HAS_ACCOUNT_REQUEST);
     }
 
-    public void validatorForUpdateEmployee(String employeeId, Employee employee){
+    public void validatorForUpdateEmployee(long employeeId, Employee employee){
         validatorEmployeeIsExists(employeeId);
 
         checkRequiredField(employee.getName(),NAME_REQUEST);
@@ -46,7 +47,7 @@ public class EmployeeValidator {
         checkRequiredField(employee.getHasAccount().toString(), HAS_ACCOUNT_REQUEST);
     }
 
-    public void validatorEmployeeIsExists(String employeeId){
+    public void validatorEmployeeIsExists(long employeeId){
         EmployeeEntry employeeEntry = employeeEntryLocalService.fetchEmployeeEntry(employeeId);
 
         if(employeeEntry != null){

@@ -34,8 +34,8 @@ public class EmployeeEntryTable extends BaseTable<EmployeeEntryTable> {
 
 	public final Column<EmployeeEntryTable, String> uuid = createColumn(
 		"uuid_", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
-	public final Column<EmployeeEntryTable, String> employeeId = createColumn(
-		"employeeId", String.class, Types.VARCHAR, Column.FLAG_PRIMARY);
+	public final Column<EmployeeEntryTable, Long> employeeId = createColumn(
+		"employeeId", Long.class, Types.BIGINT, Column.FLAG_PRIMARY);
 	public final Column<EmployeeEntryTable, Long> groupId = createColumn(
 		"groupId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
 	public final Column<EmployeeEntryTable, Long> companyId = createColumn(

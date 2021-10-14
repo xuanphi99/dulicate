@@ -165,7 +165,7 @@ public interface EmployeeEntryPersistence
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
 	public EmployeeEntry[] findByUuid_PrevAndNext(
-			String employeeId, String uuid,
+			long employeeId, String uuid,
 			com.liferay.portal.kernel.util.OrderByComparator<EmployeeEntry>
 				orderByComparator)
 		throws NoSuchEmployeeEntryException;
@@ -368,7 +368,7 @@ public interface EmployeeEntryPersistence
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
 	public EmployeeEntry[] findByUuid_C_PrevAndNext(
-			String employeeId, String uuid, long companyId,
+			long employeeId, String uuid, long companyId,
 			com.liferay.portal.kernel.util.OrderByComparator<EmployeeEntry>
 				orderByComparator)
 		throws NoSuchEmployeeEntryException;
@@ -513,7 +513,7 @@ public interface EmployeeEntryPersistence
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
 	public EmployeeEntry[] findByname_PrevAndNext(
-			String employeeId, String name,
+			long employeeId, String name,
 			com.liferay.portal.kernel.util.OrderByComparator<EmployeeEntry>
 				orderByComparator)
 		throws NoSuchEmployeeEntryException;
@@ -553,7 +553,7 @@ public interface EmployeeEntryPersistence
 	 * @param employeeId the primary key for the new employee entry
 	 * @return the new employee entry
 	 */
-	public EmployeeEntry create(String employeeId);
+	public EmployeeEntry create(long employeeId);
 
 	/**
 	 * Removes the employee entry with the primary key from the database. Also notifies the appropriate model listeners.
@@ -562,7 +562,7 @@ public interface EmployeeEntryPersistence
 	 * @return the employee entry that was removed
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
-	public EmployeeEntry remove(String employeeId)
+	public EmployeeEntry remove(long employeeId)
 		throws NoSuchEmployeeEntryException;
 
 	public EmployeeEntry updateImpl(EmployeeEntry employeeEntry);
@@ -574,7 +574,7 @@ public interface EmployeeEntryPersistence
 	 * @return the employee entry
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
-	public EmployeeEntry findByPrimaryKey(String employeeId)
+	public EmployeeEntry findByPrimaryKey(long employeeId)
 		throws NoSuchEmployeeEntryException;
 
 	/**
@@ -583,7 +583,7 @@ public interface EmployeeEntryPersistence
 	 * @param employeeId the primary key of the employee entry
 	 * @return the employee entry, or <code>null</code> if a employee entry with the primary key could not be found
 	 */
-	public EmployeeEntry fetchByPrimaryKey(String employeeId);
+	public EmployeeEntry fetchByPrimaryKey(long employeeId);
 
 	/**
 	 * Returns all the employee entries.

@@ -35,7 +35,7 @@ public class EmployeeEntryModelIndexerWriterContributor implements  ModelIndexer
 
     @Override
     public long getCompanyId(EmployeeEntry baseModel) {
-        return 0;
+        return baseModel.getCompanyId();
     }
 
     @Override

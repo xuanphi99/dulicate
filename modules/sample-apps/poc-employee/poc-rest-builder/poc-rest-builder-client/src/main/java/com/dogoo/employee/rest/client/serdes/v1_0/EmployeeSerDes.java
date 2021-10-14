@@ -100,11 +100,7 @@ public class EmployeeSerDes {
 
 			sb.append("\"id\": ");
 
-			sb.append("\"");
-
-			sb.append(_escape(employee.getId()));
-
-			sb.append("\"");
+			sb.append(employee.getId());
 		}
 
 		if (employee.getName() != null) {
@@ -229,7 +225,7 @@ public class EmployeeSerDes {
 			}
 			else if (Objects.equals(jsonParserFieldName, "id")) {
 				if (jsonParserFieldValue != null) {
-					employee.setId((String)jsonParserFieldValue);
+					employee.setId(Long.valueOf((String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "name")) {

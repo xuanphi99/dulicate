@@ -91,11 +91,11 @@ public class EmployeeEntrySoap implements Serializable {
 	public EmployeeEntrySoap() {
 	}
 
-	public String getPrimaryKey() {
+	public long getPrimaryKey() {
 		return _employeeId;
 	}
 
-	public void setPrimaryKey(String pk) {
+	public void setPrimaryKey(long pk) {
 		setEmployeeId(pk);
 	}
 
@@ -107,11 +107,11 @@ public class EmployeeEntrySoap implements Serializable {
 		_uuid = uuid;
 	}
 
-	public String getEmployeeId() {
+	public long getEmployeeId() {
 		return _employeeId;
 	}
 
-	public void setEmployeeId(String employeeId) {
+	public void setEmployeeId(long employeeId) {
 		_employeeId = employeeId;
 	}
 
@@ -208,7 +208,7 @@ public class EmployeeEntrySoap implements Serializable {
 	}
 
 	private String _uuid;
-	private String _employeeId;
+	private long _employeeId;
 	private long _groupId;
 	private long _companyId;
 	private long _userId;

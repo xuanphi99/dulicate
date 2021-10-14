@@ -30,7 +30,6 @@ import com.poc.employee.service.base.EmployeeEntryLocalServiceBaseImpl;
 
 import org.osgi.service.component.annotations.Component;
 
-import javax.ws.rs.PUT;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -64,7 +63,7 @@ public class EmployeeEntryLocalServiceImpl
 	@Indexable(type = IndexableType.REINDEX)
 	@SystemEvent(type = SystemEventConstants.TYPE_DEFAULT)
 	public EmployeeEntry addEmployee(String name , Date birthDay , int gender, String address , boolean hasAccount,ServiceContext serviceContext) {
-		EmployeeEntry employeeEntry = createEmployeeEntry(String.valueOf(counterLocalService.increment(EmployeeEntry.class.getName())));
+		EmployeeEntry employeeEntry = createEmployeeEntry(counterLocalService.increment(EmployeeEntry.class.getName()));
 
 		Date current = new Date();
 
@@ -90,7 +89,7 @@ public class EmployeeEntryLocalServiceImpl
 
 	@Indexable(type = IndexableType.REINDEX)
 	@SystemEvent(type = SystemEventConstants.TYPE_DEFAULT)
-	public EmployeeEntry updateEmployee(String  employeeId, String name , Date birthDay , int gender, String address , boolean hasAccount,ServiceContext serviceContext) throws PortalException {
+	public EmployeeEntry updateEmployee(long  employeeId, String name , Date birthDay , int gender, String address , boolean hasAccount,ServiceContext serviceContext) throws PortalException {
 
 		EmployeeEntry employeeEntry = getEmployeeEntry(employeeId);
 
@@ -112,7 +111,7 @@ public class EmployeeEntryLocalServiceImpl
 
 	@Indexable(type = IndexableType.REINDEX)
 	@SystemEvent(type = SystemEventConstants.TYPE_DEFAULT)
-	public EmployeeEntry patchEmployee(String  employeeId, String name , Date birthDay , int gender, String address , boolean hasAccount,ServiceContext serviceContext) throws PortalException {
+	public EmployeeEntry patchEmployee(long employeeId, String name , Date birthDay , int gender, String address , boolean hasAccount,ServiceContext serviceContext) throws PortalException {
 		EmployeeEntry employeeEntry = getEmployeeEntry(employeeId);
 		Date current = new Date();
 		boolean changed = false;
@@ -148,12 +147,12 @@ public class EmployeeEntryLocalServiceImpl
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
-	public EmployeeEntry deleteEmployee(String employeeId) throws NoSuchEmployeeEntryException {
+	public EmployeeEntry deleteEmployee(long employeeId) throws NoSuchEmployeeEntryException {
 		return employeeEntryPersistence.remove(employeeId);
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
-	public EmployeeEntry getDetailEmployee(String employeeId) throws NoSuchEmployeeEntryException {
+	public EmployeeEntry getDetailEmployee(long employeeId) throws NoSuchEmployeeEntryException {
 		return employeeEntryPersistence.findByPrimaryKey(employeeId);
 	}
 
@@ -173,7 +172,7 @@ public class EmployeeEntryLocalServiceImpl
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
-	public List<EmployeeEntry> getStudents(int start, int end) {
+	public List<EmployeeEntry> getEmployees(int start, int end) {
 		return employeeEntryPersistence.findAll(start, end);
 	}
 

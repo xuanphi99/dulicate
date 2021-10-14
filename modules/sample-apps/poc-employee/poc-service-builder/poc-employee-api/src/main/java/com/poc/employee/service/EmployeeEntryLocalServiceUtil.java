@@ -74,7 +74,7 @@ public class EmployeeEntryLocalServiceUtil {
 	 * @param employeeId the primary key for the new employee entry
 	 * @return the new employee entry
 	 */
-	public static EmployeeEntry createEmployeeEntry(String employeeId) {
+	public static EmployeeEntry createEmployeeEntry(long employeeId) {
 		return getService().createEmployeeEntry(employeeId);
 	}
 
@@ -88,7 +88,7 @@ public class EmployeeEntryLocalServiceUtil {
 		return getService().createPersistedModel(primaryKeyObj);
 	}
 
-	public static EmployeeEntry deleteEmployee(String employeeId)
+	public static EmployeeEntry deleteEmployee(long employeeId)
 		throws com.poc.employee.exception.NoSuchEmployeeEntryException {
 
 		return getService().deleteEmployee(employeeId);
@@ -121,7 +121,7 @@ public class EmployeeEntryLocalServiceUtil {
 	 * @return the employee entry that was removed
 	 * @throws PortalException if a employee entry with the primary key could not be found
 	 */
-	public static EmployeeEntry deleteEmployeeEntry(String employeeId)
+	public static EmployeeEntry deleteEmployeeEntry(long employeeId)
 		throws PortalException {
 
 		return getService().deleteEmployeeEntry(employeeId);
@@ -222,7 +222,7 @@ public class EmployeeEntryLocalServiceUtil {
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
-	public static EmployeeEntry fetchEmployeeEntry(String employeeId) {
+	public static EmployeeEntry fetchEmployeeEntry(long employeeId) {
 		return getService().fetchEmployeeEntry(employeeId);
 	}
 
@@ -239,7 +239,13 @@ public class EmployeeEntryLocalServiceUtil {
 		return getService().fetchEmployeeEntryByUuidAndGroupId(uuid, groupId);
 	}
 
-	public static EmployeeEntry getDetailEmployee(String employeeId)
+	public static com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery
+		getActionableDynamicQuery() {
+
+		return getService().getActionableDynamicQuery();
+	}
+
+	public static EmployeeEntry getDetailEmployee(long employeeId)
 		throws com.poc.employee.exception.NoSuchEmployeeEntryException {
 
 		return getService().getDetailEmployee(employeeId);
@@ -308,7 +314,7 @@ public class EmployeeEntryLocalServiceUtil {
 	 * @return the employee entry
 	 * @throws PortalException if a employee entry with the primary key could not be found
 	 */
-	public static EmployeeEntry getEmployeeEntry(String employeeId)
+	public static EmployeeEntry getEmployeeEntry(long employeeId)
 		throws PortalException {
 
 		return getService().getEmployeeEntry(employeeId);
@@ -327,6 +333,18 @@ public class EmployeeEntryLocalServiceUtil {
 		throws PortalException {
 
 		return getService().getEmployeeEntryByUuidAndGroupId(uuid, groupId);
+	}
+
+	public static List<EmployeeEntry> getEmployees(int start, int end) {
+		return getService().getEmployees(start, end);
+	}
+
+	public static com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery
+		getExportActionableDynamicQuery(
+			com.liferay.exportimport.kernel.lar.PortletDataContext
+				portletDataContext) {
+
+		return getService().getExportActionableDynamicQuery(portletDataContext);
 	}
 
 	public static
@@ -354,12 +372,8 @@ public class EmployeeEntryLocalServiceUtil {
 		return getService().getPersistedModel(primaryKeyObj);
 	}
 
-	public static List<EmployeeEntry> getStudents(int start, int end) {
-		return getService().getStudents(start, end);
-	}
-
 	public static EmployeeEntry patchEmployee(
-			String employeeId, String name, java.util.Date birthDay, int gender,
+			long employeeId, String name, java.util.Date birthDay, int gender,
 			String address, boolean hasAccount,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
@@ -370,7 +384,7 @@ public class EmployeeEntryLocalServiceUtil {
 	}
 
 	public static EmployeeEntry updateEmployee(
-			String employeeId, String name, java.util.Date birthDay, int gender,
+			long employeeId, String name, java.util.Date birthDay, int gender,
 			String address, boolean hasAccount,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {

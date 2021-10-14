@@ -32,7 +32,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,98 +39,97 @@ import java.util.Set;
  * @author khoavu
  */
 @Component(
-	property = {
-		JaxrsWhiteboardConstants.JAX_RS_APPLICATION_BASE + "=/authz-rest",
-		JaxrsWhiteboardConstants.JAX_RS_NAME + "=Authz.Rest"
-		},
-	service = Application.class
+        property = {
+                JaxrsWhiteboardConstants.JAX_RS_APPLICATION_BASE + "=/authz-rest",
+                JaxrsWhiteboardConstants.JAX_RS_NAME + "=Authz.Rest"
+        },
+        service = Application.class
 )
 public class AuthzRestApplication extends Application {
 
-	@Override
-	public Set<Object> getSingletons() {
+    @Override
+    public Set<Object> getSingletons() {
 
-		Set<Object> singletons = new HashSet<Object>();
+        Set<Object> singletons = new HashSet<Object>();
 
-		singletons.add(new JacksonJsonProvider());
+        singletons.add(new JacksonJsonProvider());
 
-		singletons.add(this);
+        singletons.add(this);
 
-		return singletons;
-	}
+        return singletons;
+    }
 
-	@Override
-	public Set<Class<?>> getClasses() {
-		Set<Class<?>> classes = new HashSet<Class<?>>();
-		/* Classes to wrap any exception into a JSON response */
-		classes.add(UnAuthenticationExceptionMapper.class);
-		classes.add(BadRequestExceptionMapper.class);
-		classes.add(TokenRefreshExceptionMapper.class);
-		classes.add(NotFoundExceptionMapper.class);
-		/* add additional JAX-RS classes here */
-		return classes;
-	}
+    @Override
+    public Set<Class<?>> getClasses() {
+        Set<Class<?>> classes = new HashSet<Class<?>>();
+        /* Classes to wrap any exception into a JSON response */
+        classes.add(UnAuthenticationExceptionMapper.class);
+        classes.add(BadRequestExceptionMapper.class);
+        classes.add(TokenRefreshExceptionMapper.class);
+        classes.add(NotFoundExceptionMapper.class);
+        /* add additional JAX-RS classes here */
+        return classes;
+    }
 
-	@GET
-	@Produces("text/plain")
-	@RequiresScope("DOGOO_APP_R")
-	public String working(SignIn signIn) {
-		return "It works!";
-	}
+    @GET
+    @Produces("text/plain")
+    @RequiresScope("DOGOO_APP_R")
+    public String working(SignIn signIn) {
+        return "It works!";
+    }
 
-	@POST
-	@Path("/signin")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@RequiresScope("DOGOO_APP_R")
-	public Response signin(SignIn signIn, @Context HttpServletRequest httpServletRequest)
-			throws PortalException, UnAuthenticationException, BadRequestException {
+    @POST
+    @Path("/signin")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RequiresScope("DOGOO_APP_R")
+    public Response signin(SignIn signIn, @Context HttpServletRequest httpServletRequest)
+            throws PortalException, UnAuthenticationException, BadRequestException {
 
-		authzValidator.validateForSignIn(signIn);
+        authzValidator.validateForSignIn(signIn);
 
-		Company company = authzService.getCompanyContext(httpServletRequest);
+        Company company = authzService.getCompanyContext(httpServletRequest);
 
-		Token token = authzService.getToken(company.getCompanyId(), signIn.getUsername(), signIn.getPassword());
+        Token token = authzService.getToken(company.getCompanyId(), signIn.getUsername(), signIn.getPassword());
+        return Response.status(HttpURLConnection.HTTP_OK).entity(token).build();
+    }
 
-		return Response.status(HttpURLConnection.HTTP_OK).entity(token).build();
-	}
+    @POST
+    @Path("/refreshtoken")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response refreshToken(RefreshToken refreshToken, @Context HttpServletRequest httpServletRequest)
+            throws PortalException, TokenRefreshException, BadRequestException, NotFoundException {
 
-	@POST
-	@Path("/refreshtoken")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response refreshToken(RefreshToken refreshToken, @Context HttpServletRequest httpServletRequest)
-			throws PortalException, TokenRefreshException, BadRequestException, NotFoundException {
+        authzValidator.validateForRefreshToken(refreshToken);
 
-		authzValidator.validateForRefreshToken(refreshToken);
+        Company company = authzService.getCompanyContext(httpServletRequest);
 
-		Company company = authzService.getCompanyContext(httpServletRequest);
+        Token token = authzService.refreshToken(company.getCompanyId(), refreshToken.getToken());
 
-		Token token = authzService.refreshToken(company.getCompanyId(), refreshToken.getToken());
-
-		return Response.status(HttpURLConnection.HTTP_OK).entity(token).build();
-	}
-
-
-	@POST
-	@Path("/refreshtoken2")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response refreshToken2(@Context HttpServletRequest httpServletRequest)
-			throws PortalException, TokenRefreshException, BadRequestException, NotFoundException {
-
-		SignIn token = new SignIn();
-		token.setPassword("pass");
-		token.setUsername("dsads");
-
-		return Response.status(HttpURLConnection.HTTP_OK).entity(token).build();
-	}
+        return Response.status(HttpURLConnection.HTTP_OK).entity(token).build();
+    }
 
 
-	@Reference
-	private AuthzService authzService;
+    @POST
+    @Path("/refreshtoken2")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response refreshToken2(@Context HttpServletRequest httpServletRequest)
+            throws PortalException, TokenRefreshException, BadRequestException, NotFoundException {
 
-	@Reference
-	private AuthzValidator authzValidator;
+        SignIn token = new SignIn();
+        token.setPassword("pass");
+        token.setUsername("dsads");
+
+        return Response.status(HttpURLConnection.HTTP_OK).entity(token).build();
+    }
+
+
+    @Reference
+    private AuthzService authzService;
+
+    @Reference
+    private AuthzValidator authzValidator;
 
 }

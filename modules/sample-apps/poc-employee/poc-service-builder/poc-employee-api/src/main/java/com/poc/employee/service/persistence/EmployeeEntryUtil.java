@@ -261,7 +261,7 @@ public class EmployeeEntryUtil {
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
 	public static EmployeeEntry[] findByUuid_PrevAndNext(
-			String employeeId, String uuid,
+			long employeeId, String uuid,
 			OrderByComparator<EmployeeEntry> orderByComparator)
 		throws com.poc.employee.exception.NoSuchEmployeeEntryException {
 
@@ -508,7 +508,7 @@ public class EmployeeEntryUtil {
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
 	public static EmployeeEntry[] findByUuid_C_PrevAndNext(
-			String employeeId, String uuid, long companyId,
+			long employeeId, String uuid, long companyId,
 			OrderByComparator<EmployeeEntry> orderByComparator)
 		throws com.poc.employee.exception.NoSuchEmployeeEntryException {
 
@@ -674,7 +674,7 @@ public class EmployeeEntryUtil {
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
 	public static EmployeeEntry[] findByname_PrevAndNext(
-			String employeeId, String name,
+			long employeeId, String name,
 			OrderByComparator<EmployeeEntry> orderByComparator)
 		throws com.poc.employee.exception.NoSuchEmployeeEntryException {
 
@@ -725,7 +725,7 @@ public class EmployeeEntryUtil {
 	 * @param employeeId the primary key for the new employee entry
 	 * @return the new employee entry
 	 */
-	public static EmployeeEntry create(String employeeId) {
+	public static EmployeeEntry create(long employeeId) {
 		return getPersistence().create(employeeId);
 	}
 
@@ -736,7 +736,7 @@ public class EmployeeEntryUtil {
 	 * @return the employee entry that was removed
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
-	public static EmployeeEntry remove(String employeeId)
+	public static EmployeeEntry remove(long employeeId)
 		throws com.poc.employee.exception.NoSuchEmployeeEntryException {
 
 		return getPersistence().remove(employeeId);
@@ -753,7 +753,7 @@ public class EmployeeEntryUtil {
 	 * @return the employee entry
 	 * @throws NoSuchEmployeeEntryException if a employee entry with the primary key could not be found
 	 */
-	public static EmployeeEntry findByPrimaryKey(String employeeId)
+	public static EmployeeEntry findByPrimaryKey(long employeeId)
 		throws com.poc.employee.exception.NoSuchEmployeeEntryException {
 
 		return getPersistence().findByPrimaryKey(employeeId);
@@ -765,7 +765,7 @@ public class EmployeeEntryUtil {
 	 * @param employeeId the primary key of the employee entry
 	 * @return the employee entry, or <code>null</code> if a employee entry with the primary key could not be found
 	 */
-	public static EmployeeEntry fetchByPrimaryKey(String employeeId) {
+	public static EmployeeEntry fetchByPrimaryKey(long employeeId) {
 		return getPersistence().fetchByPrimaryKey(employeeId);
 	}
 

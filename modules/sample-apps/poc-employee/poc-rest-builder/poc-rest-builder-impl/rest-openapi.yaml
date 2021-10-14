@@ -1,11 +1,95 @@
 components:
+  responses:
+    # Descriptions of common responses
+    BadRequestException:
+      description: Request body not meet require
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotAuthorizedException:
+      description: Authentication failure
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ForbiddenException:
+      description: Not permitted to access
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFoundException:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotAllowedException:
+      description: HTTP method not supported
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotAcceptableException:
+      description: Client media type requested not supported
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotSupportedException:
+      description: Client posted media type not supported
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    InternalServerErrorException:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ServiceUnavailableException:
+      description: Server is temporarily unavailable or busy
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/Error"
   schemas:
     Employee:
       description: A very simple employee
       properties:
         id:
           description: The employee ID.
-          type: string
+          type: integer
+          format: int64
         name:
           description: The employee Name.
           type: string
@@ -24,6 +108,24 @@ components:
           description: The employee has account ?
           type: boolean
       type: object
+    Error:
+      type: object
+      properties:
+        status:
+          format: int64
+          readOnly: true
+          type: integer
+          example: 401
+        code:
+          type: string
+          example: DOGOO-100
+        message:
+          type: string
+        developerMessage:
+          type: string
+      required:
+        - code
+        - message
 info:
   description: "DemoRestBuilder REST API"
   license:
@@ -43,7 +145,8 @@ paths:
           description: Employee ID
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         200:
           content:
@@ -54,6 +157,24 @@ paths:
               schema:
                 $ref: "#/components/schemas/Employee"
           description: ""
+        400:
+          $ref: "#/components/responses/BadRequestException"
+        401:
+          $ref: "#/components/responses/NotAuthorizedException"
+        403:
+          $ref: "#/components/responses/ForbiddenException"
+        404:
+          $ref: "#/components/responses/NotFoundException"
+        405:
+          $ref: "#/components/responses/NotAllowedException"
+        406:
+          $ref: "#/components/responses/NotAcceptableException"
+        415:
+          $ref: "#/components/responses/NotSupportedException"
+        500:
+          $ref: "#/components/responses/InternalServerErrorException"
+        503:
+          $ref: "#/components/responses/ServiceUnavailableException"
       tags: [ "Employee" ]
     delete:
       operationId: deleteEmployee
@@ -63,13 +184,32 @@ paths:
           name: employeeId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         204:
           content:
             application/json: { }
             application/xml: { }
           description: ""
+        400:
+          $ref: "#/components/responses/BadRequestException"
+        401:
+          $ref: "#/components/responses/NotAuthorizedException"
+        403:
+          $ref: "#/components/responses/ForbiddenException"
+        404:
+          $ref: "#/components/responses/NotFoundException"
+        405:
+          $ref: "#/components/responses/NotAllowedException"
+        406:
+          $ref: "#/components/responses/NotAcceptableException"
+        415:
+          $ref: "#/components/responses/NotSupportedException"
+        500:
+          $ref: "#/components/responses/InternalServerErrorException"
+        503:
+          $ref: "#/components/responses/ServiceUnavailableException"
       tags: [ "Employee" ]
     put:
       operationId: putEmployee
@@ -79,7 +219,8 @@ paths:
           name: employeeId
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         content:
           application/json:
@@ -98,13 +239,55 @@ paths:
               schema:
                 $ref: "#/components/schemas/Employee"
           description: ""
+        400:
+          $ref: "#/components/responses/BadRequestException"
+        401:
+          $ref: "#/components/responses/NotAuthorizedException"
+        403:
+          $ref: "#/components/responses/ForbiddenException"
+        404:
+          $ref: "#/components/responses/NotFoundException"
+        405:
+          $ref: "#/components/responses/NotAllowedException"
+        406:
+          $ref: "#/components/responses/NotAcceptableException"
+        415:
+          $ref: "#/components/responses/NotSupportedException"
+        500:
+          $ref: "#/components/responses/InternalServerErrorException"
+        503:
+          $ref: "#/components/responses/ServiceUnavailableException"
       tags: [ "Employee" ]
   "/employees":
     get:
       operationId: getEmployees
       summary: Get list employee
+      description: Retrieves the pets. Results can be paginated, filtered, searched, and sorted.
+      tags: [ "Employee" ]
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: sort
+          schema:
+            type: string
       responses:
         200:
+          description: A paged array of pets
           content:
             application/json:
               schema:
@@ -116,11 +299,28 @@ paths:
                 items:
                   $ref: "#/components/schemas/Employee"
                 type: array
-          description: ""
-      tags: [ "Employee" ]
+        400:
+          $ref: "#/components/responses/BadRequestException"
+        401:
+          $ref: "#/components/responses/NotAuthorizedException"
+        403:
+          $ref: "#/components/responses/ForbiddenException"
+        404:
+          $ref: "#/components/responses/NotFoundException"
+        405:
+          $ref: "#/components/responses/NotAllowedException"
+        406:
+          $ref: "#/components/responses/NotAcceptableException"
+        415:
+          $ref: "#/components/responses/NotSupportedException"
+        500:
+          $ref: "#/components/responses/InternalServerErrorException"
+        503:
+          $ref: "#/components/responses/ServiceUnavailableException"
     post:
       operationId: addEmployee
       summary: Add new Employee
+
       requestBody:
         content:
           application/json:
@@ -139,4 +339,22 @@ paths:
               schema:
                 $ref: "#/components/schemas/Employee"
           description: ""
+        400:
+          $ref: "#/components/responses/BadRequestException"
+        401:
+          $ref: "#/components/responses/NotAuthorizedException"
+        403:
+          $ref: "#/components/responses/ForbiddenException"
+        404:
+          $ref: "#/components/responses/NotFoundException"
+        405:
+          $ref: "#/components/responses/NotAllowedException"
+        406:
+          $ref: "#/components/responses/NotAcceptableException"
+        415:
+          $ref: "#/components/responses/NotSupportedException"
+        500:
+          $ref: "#/components/responses/InternalServerErrorException"
+        503:
+          $ref: "#/components/responses/ServiceUnavailableException"
       tags: [ "Employee" ]

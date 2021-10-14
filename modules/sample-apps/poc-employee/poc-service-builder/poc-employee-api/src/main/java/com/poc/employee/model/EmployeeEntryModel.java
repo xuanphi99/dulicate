@@ -51,14 +51,14 @@ public interface EmployeeEntryModel
 	 *
 	 * @return the primary key of this employee entry
 	 */
-	public String getPrimaryKey();
+	public long getPrimaryKey();
 
 	/**
 	 * Sets the primary key of this employee entry.
 	 *
 	 * @param primaryKey the primary key of this employee entry
 	 */
-	public void setPrimaryKey(String primaryKey);
+	public void setPrimaryKey(long primaryKey);
 
 	/**
 	 * Returns the uuid of this employee entry.
@@ -82,15 +82,14 @@ public interface EmployeeEntryModel
 	 *
 	 * @return the employee ID of this employee entry
 	 */
-	@AutoEscape
-	public String getEmployeeId();
+	public long getEmployeeId();
 
 	/**
 	 * Sets the employee ID of this employee entry.
 	 *
 	 * @param employeeId the employee ID of this employee entry
 	 */
-	public void setEmployeeId(String employeeId);
+	public void setEmployeeId(long employeeId);
 
 	/**
 	 * Returns the group ID of this employee entry.

@@ -23,6 +23,7 @@ import com.liferay.portal.vulcan.resource.EntityModelResource;
 import com.liferay.portal.vulcan.util.ActionUtil;
 import com.liferay.portal.vulcan.util.TransformUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -52,6 +53,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -81,7 +83,7 @@ public abstract class BaseEmployeeResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@Tags(value = {@Tag(name = "Employee")})
 	public void deleteEmployee(
-			@NotNull @Parameter(hidden = true) @PathParam("employeeId") String
+			@NotNull @Parameter(hidden = true) @PathParam("employeeId") Long
 				employeeId)
 		throws Exception {
 	}
@@ -136,7 +138,7 @@ public abstract class BaseEmployeeResourceImpl
 	@Produces({"application/json", "application/xml"})
 	@Tags(value = {@Tag(name = "Employee")})
 	public Employee getEmployee(
-			@NotNull @Parameter(hidden = true) @PathParam("employeeId") String
+			@NotNull @Parameter(hidden = true) @PathParam("employeeId") Long
 				employeeId)
 		throws Exception {
 
@@ -158,7 +160,7 @@ public abstract class BaseEmployeeResourceImpl
 	@PUT
 	@Tags(value = {@Tag(name = "Employee")})
 	public Employee putEmployee(
-			@NotNull @Parameter(hidden = true) @PathParam("employeeId") String
+			@NotNull @Parameter(hidden = true) @PathParam("employeeId") Long
 				employeeId,
 			Employee employee)
 		throws Exception {
@@ -208,11 +210,28 @@ public abstract class BaseEmployeeResourceImpl
 	 * curl -X 'GET' 'http://localhost:8080/o/dogoo/employee-rest-builder/v1.0/employees'  -u 'test@liferay.com:test'
 	 */
 	@GET
+	@Operation(
+		description = "Retrieves the pets. Results can be paginated, filtered, searched, and sorted."
+	)
 	@Override
+	@Parameters(
+		value = {
+			@Parameter(in = ParameterIn.QUERY, name = "search"),
+			@Parameter(in = ParameterIn.QUERY, name = "filter"),
+			@Parameter(in = ParameterIn.QUERY, name = "page"),
+			@Parameter(in = ParameterIn.QUERY, name = "pageSize"),
+			@Parameter(in = ParameterIn.QUERY, name = "sort")
+		}
+	)
 	@Path("/employees")
 	@Produces({"application/json", "application/xml"})
 	@Tags(value = {@Tag(name = "Employee")})
-	public Page<Employee> getEmployees() throws Exception {
+	public Page<Employee> getEmployees(
+			@Parameter(hidden = true) @QueryParam("search") String search,
+			@Context Filter filter, @Context Pagination pagination,
+			@Context Sort[] sorts)
+		throws Exception {
+
 		return Page.of(Collections.emptyList());
 	}
 
@@ -305,7 +324,7 @@ public abstract class BaseEmployeeResourceImpl
 		for (Employee employee : employees) {
 			putEmployee(
 				employee.getId() != null ? employee.getId() :
-					(String)parameters.get("employeeId"),
+					Long.parseLong((String)parameters.get("employeeId")),
 				employee);
 		}
 	}

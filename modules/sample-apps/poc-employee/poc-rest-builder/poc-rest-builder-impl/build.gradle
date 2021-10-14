@@ -1,7 +1,7 @@
 dependencies {
-	compile project(":modules:sample-apps:poc-employee:poc-rest-builder:poc-rest-builder-api")
+	implementation 'org.jetbrains:annotations:20.1.0'
+    compile project(":modules:sample-apps:poc-employee:poc-rest-builder:poc-rest-builder-api")
 	compile project(":modules:sample-apps:poc-employee:poc-service-builder:poc-employee-api")
-
 
 	compileOnly group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: "2.10.3"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.function"

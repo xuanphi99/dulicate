@@ -2,10 +2,13 @@ package com.dogoo.employee.rest.resource.v1_0;
 
 import com.dogoo.employee.rest.dto.v1_0.Employee;
 
+import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.vulcan.pagination.Pagination;
 
 import java.util.Locale;
 
@@ -35,20 +38,22 @@ public interface EmployeeResource {
 		return FactoryHolder.factory.create();
 	}
 
-	public void deleteEmployee(String employeeId) throws Exception;
+	public void deleteEmployee(Long employeeId) throws Exception;
 
 	public Response deleteEmployeeBatch(String callbackURL, Object object)
 		throws Exception;
 
-	public Employee getEmployee(String employeeId) throws Exception;
+	public Employee getEmployee(Long employeeId) throws Exception;
 
-	public Employee putEmployee(String employeeId, Employee employee)
+	public Employee putEmployee(Long employeeId, Employee employee)
 		throws Exception;
 
 	public Response putEmployeeBatch(String callbackURL, Object object)
 		throws Exception;
 
-	public Page<Employee> getEmployees() throws Exception;
+	public Page<Employee> getEmployees(
+			String search, Filter filter, Pagination pagination, Sort[] sorts)
+		throws Exception;
 
 	public Employee addEmployee(Employee employee) throws Exception;
 
